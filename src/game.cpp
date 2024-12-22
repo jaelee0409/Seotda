@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "game.h"
+#include "Game.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -32,6 +32,7 @@ bool Game::initialize() {
     }
 
     isRunning = true;
+
     return true;
 }
 
@@ -68,7 +69,7 @@ void Game::update() {
 }
 
 void Game::render() {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black background
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
     // TODO: Add rendering logic

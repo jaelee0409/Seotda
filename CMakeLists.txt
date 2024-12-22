@@ -17,14 +17,13 @@ project(Seotda)
 # Find the SDL2 package
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 
 # Automatically collect all .cpp files in src
 file(GLOB SOURCES
     src/*.cpp
 )
-
-# include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # Create the executable
 add_executable(Seotda ${SOURCES})
@@ -33,6 +32,7 @@ add_executable(Seotda ${SOURCES})
 target_link_libraries(Seotda 
     SDL2::SDL2 
     SDL2_image::SDL2_image
+    SDL2_ttf::SDL2_ttf
     SDL2_mixer::SDL2_mixer
 )
 
