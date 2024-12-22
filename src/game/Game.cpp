@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Game.h"
+#include "game/Game.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -31,12 +31,15 @@ bool Game::initialize() {
         return false;
     }
 
+    deck = new Deck(renderer);
+
     isRunning = true;
 
     return true;
 }
 
 void Game::run() {
+
     while (isRunning) {
         handleEvents();
         update();
@@ -45,6 +48,10 @@ void Game::run() {
 }
 
 void Game::cleanUp() {
+    if (deck) {
+        delete deck;
+    }
+
     if (renderer) {
         SDL_DestroyRenderer(renderer);
     }
@@ -69,10 +76,13 @@ void Game::update() {
 }
 
 void Game::render() {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 128, 0, 255);
     SDL_RenderClear(renderer);
 
-    // TODO: Add rendering logic
+    // Render all cards in the deck
+    for (const Card& card : deck) {
+        card.render(renderer);
+    }
 
     SDL_RenderPresent(renderer);
 }

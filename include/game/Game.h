@@ -30,7 +30,7 @@ class Game {
         SDL_Renderer* renderer;
 
         std::vector<Player*> players;  // Vector of players (1 human, 4 AI)
-        Deck deck;  // The card deck used in the game
+        Deck *deck;  // The card deck used in the game
         int pot;  // The total money pot for the current round
         int currentBet;  // The current bet across all players
 };

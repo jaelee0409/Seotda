@@ -12,7 +12,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     add_definitions(-DNDEBUG)
 endif()
 
-project(Seotda)
+project(SeotdaGame)
 
 # Find the SDL2 package
 find_package(SDL2 REQUIRED)
@@ -22,14 +22,20 @@ find_package(SDL2_mixer REQUIRED)
 
 # Automatically collect all .cpp files in src
 file(GLOB SOURCES
-    src/*.cpp
+    src/main.cpp
+    src/*/*.cpp
 )
 
 # Create the executable
-add_executable(Seotda ${SOURCES})
+add_executable(SeotdaGame ${SOURCES})
+
+target_include_directories(SeotdaGame
+    PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+)
 
 # Link the SDL2 and SDL2_image libraries
-target_link_libraries(Seotda 
+target_link_libraries(SeotdaGame 
     SDL2::SDL2 
     SDL2_image::SDL2_image
     SDL2_ttf::SDL2_ttf

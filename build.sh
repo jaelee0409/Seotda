@@ -23,9 +23,9 @@ echo "Building the project..."
 cmake --build .
 
 # Check if the executable exists and run it
-if [ -f "./Seotda.exe" ]; then
-    echo "Launching Seotda.exe..."
-    ./Seotda.exe
+if [ -f "./SeotdaGame.exe" ]; then
+    echo "Launching SeotdaGame.exe..."
+    ./SeotdaGame.exe
 else
     echo "Build failed. Executable not found."
 fi
