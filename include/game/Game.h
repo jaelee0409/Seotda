@@ -1,9 +1,17 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "Player.h"
 #include "Deck.h"
+
+enum class GameState {
+    WaitingForInput,
+    PlayerTurn,
+    RoundEnded,
+    GameOver
+};
 
 class Game {
     public:
@@ -29,8 +37,9 @@ class Game {
         SDL_Window* window;
         SDL_Renderer* renderer;
 
+        GameState currentState;
         std::vector<Player*> players;  // Vector of players (1 human, 4 AI)
-        Deck *deck;  // The card deck used in the game
+        std::unique_ptr<Deck> deck;  // The card deck used in the game
         int pot;  // The total money pot for the current round
         int currentBet;  // The current bet across all players
 };

@@ -1,17 +1,25 @@
 #include <iostream>
+#include <memory>
+#include <SDL.h>
+#include <SDL_image.h>
 
 #include "game/Game.h"
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 1024;
 
-Game::Game() : window(nullptr), renderer(nullptr), isRunning(false) {}
+Game::Game() : window(nullptr), renderer(nullptr), isRunning(false), deck(nullptr) {}
 
 Game::~Game() {}
 
 bool Game::initialize() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << "\n";
+        return false;
+    }
+
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        std::cerr << "SDL_image could not initialize! IMG Error: " << IMG_GetError() << std::endl;
         return false;
     }
 
@@ -31,7 +39,11 @@ bool Game::initialize() {
         return false;
     }
 
-    deck = new Deck(renderer);
+    if (renderer == nullptr) {
+        std::cerr << "Renderer is null. Check SDL_Renderer initialization." << std::endl;
+    }
+
+    deck = std::make_unique<Deck>(renderer);
 
     isRunning = true;
 
@@ -39,7 +51,6 @@ bool Game::initialize() {
 }
 
 void Game::run() {
-
     while (isRunning) {
         handleEvents();
         update();
@@ -48,16 +59,17 @@ void Game::run() {
 }
 
 void Game::cleanUp() {
-    if (deck) {
-        delete deck;
-    }
+    IMG_Quit();
 
     if (renderer) {
         SDL_DestroyRenderer(renderer);
+        renderer = nullptr;
     }
     if (window) {
         SDL_DestroyWindow(window);
+        window = nullptr;
     }
+
     SDL_Quit();
 }
 
@@ -67,21 +79,43 @@ void Game::handleEvents() {
         if (event.type == SDL_QUIT) {
             isRunning = false;
         }
-        // TODO: Add event handling for game logic
+        else if (event.type == SDL_KEYDOWN) {
+            // Handle key presses for game actions (deal cards, player input)
+            if (event.key.keysym.sym == SDLK_d) {  // Example: Deal cards on 'D' key press
+                //deck.deal().printCard();
+            }
+        }
     }
 }
 
 void Game::update() {
-    // TODO: Add game state update logic
+    switch (currentState) {
+        case GameState::WaitingForInput:
+            // Handle input and game logic
+            break;
+        case GameState::PlayerTurn:
+            // Handle player's turn
+            break;
+        case GameState::RoundEnded:
+            // End round and prepare for next round
+            break;
+        case GameState::GameOver:
+            // Handle game over logic
+            break;
+    }
 }
 
 void Game::render() {
     SDL_SetRenderDrawColor(renderer, 0, 128, 0, 255);
     SDL_RenderClear(renderer);
 
-    // Render all cards in the deck
-    for (const Card& card : deck) {
-        card.render(renderer);
+    // for (const auto& card : deck->getDeck()) {
+    //     card.render();
+    // }
+
+    
+    for (const auto& card : deck->getDeck()) {
+        card->render();
     }
 
     SDL_RenderPresent(renderer);

@@ -22,10 +22,13 @@ cmake -G "MinGW Makefiles" ..
 echo "Building the project..."
 cmake --build .
 
-# Check if the executable exists and run it
+# Check if the executable exists
 if [ -f "./SeotdaGame.exe" ]; then
+    # Move back to the project root directory to run the executable
+    cd ..
+
     echo "Launching SeotdaGame.exe..."
-    ./SeotdaGame.exe
+    ./build/SeotdaGame.exe
 else
     echo "Build failed. Executable not found."
 fi

@@ -3,13 +3,15 @@
 
 #include "game/Card.h"
 
-Card::Card(CardSuit s, CardType t, SDL_Renderer* renderer) : suit(s), type(t), renderer(renderer)
+Card::Card(CardSuit s, CardType t, SDL_Renderer* _renderer) : suit(s), type(t), renderer(_renderer)
 {
-    if (!loadTexture())
+    if (!loadTexture()) {
         std::cerr << "Failed to load image: " << SDL_GetError() << std::endl;
-
-    rect.x = 50;
-    rect.y = 50;
+        return;
+    }
+        
+    rect.x = 0;
+    rect.y = 0;
     rect.w = 46;
     rect.h = 72;
 }
@@ -26,10 +28,14 @@ void Card::update()
 
 }
 
-void Card::render(SDL_Renderer* renderer)
+void Card::render() const
 {
     if (texture != nullptr) {
-        SDL_RenderCopy(renderer, texture, nullptr, &rect);
+        if (SDL_RenderCopy(renderer, texture, nullptr, &rect) != 0) {
+            std::cerr << "Error rendering card: " << SDL_GetError() << std::endl;
+        }
+    } else {
+        std::cerr << "Texture is nullptr for card: " << getCardSuitName(suit) << " " << getCardTypeName(type) << std::endl;
     }
 }
 
@@ -40,23 +46,29 @@ void Card::handleEvent(const SDL_Event& event)
 
 bool Card::loadTexture()
 {
-    std::string imagePath = getCardImage();
+    std::string imagePath = getCardImagePath();
     SDL_Surface* surface = IMG_Load(imagePath.c_str());
-
     if (surface == nullptr)
     {
+        std::cerr << "IMG_Load error: " << IMG_GetError() << std::endl;
         return false;
     }
     
     texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (texture == nullptr) {
+        std::cerr << "Failed to create texture from surface: " << SDL_GetError() << std::endl;
+        return false;
+    }
+
     SDL_FreeSurface(surface);
 
     return true;
 }
 
-std::string Card::getCardImage() const
+std::string Card::getCardImagePath() const
 {
-    std::string imageName;
+    std::string basePath = "assets/images/cards/";
+    std::string imageName = "";
 
     switch (suit)
     {
@@ -146,7 +158,7 @@ std::string Card::getCardImage() const
 
     imageName += ".png";
 
-    return imageName;
+    return basePath + imageName;
 }
 
 SDL_Texture* Card::getCardTexture() const
@@ -227,4 +239,9 @@ std::string Card::getCardSuitName(CardSuit s)
         default:
             return "Unknown";
     }
+}
+
+void Card::setPosition(int x, int y) {
+    rect.x = x;
+    rect.y = y;
 }

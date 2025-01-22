@@ -34,24 +34,26 @@ enum class CardType : uint8_t
 class Card : public GameObject
 {
     public:
-        CardSuit suit;
-        CardType type;
+
 
         Card(CardSuit s, CardType t, SDL_Renderer* renderer);
         ~Card();
 
         void update() override;
-        void render(SDL_Renderer* renderer) override;
+        void render() const override;
         void handleEvent(const SDL_Event& event) override;
         bool loadTexture();
-        std::string getCardImage() const;
+        std::string getCardImagePath() const;
         SDL_Texture* getCardTexture() const;
         void printCard() const;
+        void setPosition(int x, int y);
 
     private:
         SDL_Rect rect;
         SDL_Renderer* renderer;
         SDL_Texture* texture;
+        CardSuit suit;
+        CardType type;
 
         static std::string getCardSuitName(CardSuit s);
         static std::string getCardTypeName(CardType t);

@@ -1,3 +1,0 @@
-C:/msys64/home/CKIRUser/Seotda/build/CMakeFiles/SeotdaGame.dir
-C:/msys64/home/CKIRUser/Seotda/build/CMakeFiles/edit_cache.dir
-C:/msys64/home/CKIRUser/Seotda/build/CMakeFiles/rebuild_cache.dir

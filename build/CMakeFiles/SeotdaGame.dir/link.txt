@@ -1,3 +1,0 @@
-C:\msys64\ucrt64\bin\cmake.exe -E rm -f CMakeFiles\SeotdaGame.dir/objects.a
-C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\SeotdaGame.dir/objects.a @CMakeFiles\SeotdaGame.dir\objects1.rsp
-C:\msys64\ucrt64\bin\c++.exe -g -Wl,--whole-archive CMakeFiles\SeotdaGame.dir/objects.a -Wl,--no-whole-archive -o SeotdaGame.exe -Wl,--out-implib,libSeotdaGame.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\SeotdaGame.dir\linkLibs.rsp
