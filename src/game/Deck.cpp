@@ -3,8 +3,8 @@
 #include <random>
 #include <vector>
 
-#include "game/Deck.h"
-#include "game/Card.h"
+#include "Deck.h"
+#include "Card.h"
 
 Deck::Deck(SDL_Renderer* _renderer) : renderer(_renderer)
 {

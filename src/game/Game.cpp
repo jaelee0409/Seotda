@@ -5,7 +5,8 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "Config.h"
-#include "game/Game.h"
+#include "Game.h"
+#include "Card.h"
 
 Game::Game() : window(nullptr), renderer(nullptr), isRunning(false), deck(nullptr) {}
 
@@ -51,6 +52,11 @@ bool Game::initialize() {
 
     isRunning = true;
 
+    if (!loadFaceDownTexture()) {
+        std::cerr << "Error: Unable to load face-down texture!" << std::endl;
+        return false;
+    }
+
     return true;
 }
 
@@ -63,7 +69,7 @@ void Game::run() {
 }
 
 void Game::cleanUp() {
-    IMG_Quit();
+    Card::destroyFaceDownTexture();
 
     if (renderer) {
         SDL_DestroyRenderer(renderer);
@@ -73,7 +79,7 @@ void Game::cleanUp() {
         SDL_DestroyWindow(window);
         window = nullptr;
     }
-
+    IMG_Quit();
     SDL_Quit();
 }
 
@@ -113,14 +119,20 @@ void Game::render() {
     SDL_SetRenderDrawColor(renderer, 0, 128, 0, 255);
     SDL_RenderClear(renderer);
 
-    // for (const auto& card : deck->getDeck()) {
-    //     card.render();
-    // }
-
-    
     for (const auto& card : deck->getDeck()) {
         card->render();
     }
 
     SDL_RenderPresent(renderer);
+}
+
+bool Game::loadFaceDownTexture() {
+    SDL_Texture* faceDownTexture = IMG_LoadTexture(renderer, "assets/images/cards/face_down.png");
+    if (faceDownTexture == nullptr) {
+        std::cerr << "Failed to load card face down texture: " << IMG_GetError() << std::endl;
+        return false;
+    }
+
+    Card::setFaceDownTexture(faceDownTexture);
+    return true;
 }

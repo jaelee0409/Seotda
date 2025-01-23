@@ -2,9 +2,11 @@
 #include <SDL_image.h>
 
 #include "Config.h"
-#include "game/Card.h"
+#include "Card.h"
 
-Card::Card(CardSuit s, CardType t, SDL_Renderer* _renderer) : suit(s), type(t), renderer(_renderer)
+SDL_Texture* Card::faceDownTexture = nullptr;
+
+Card::Card(CardSuit s, CardType t, SDL_Renderer* _renderer) : suit(s), type(t), renderer(_renderer), faceUpTexture(nullptr), isFaceUp(false)
 {
     if (!loadTexture()) {
         std::cerr << "Failed to load image: " << SDL_GetError() << std::endl;
@@ -19,8 +21,22 @@ Card::Card(CardSuit s, CardType t, SDL_Renderer* _renderer) : suit(s), type(t), 
 
 Card::~Card()
 {
-    if (texture != nullptr) {
-        SDL_DestroyTexture(texture);
+    if (faceUpTexture != nullptr) {
+        SDL_DestroyTexture(faceUpTexture);
+        faceUpTexture = nullptr;
+    }
+}
+
+void Card::setFaceDownTexture(SDL_Texture* texture)
+{
+    faceDownTexture = texture;
+}
+
+void Card::destroyFaceDownTexture()
+{
+    if (faceDownTexture != nullptr) {
+        SDL_DestroyTexture(faceDownTexture);
+        faceDownTexture = nullptr;
     }
 }
 
@@ -31,13 +47,22 @@ void Card::update()
 
 void Card::render() const
 {
-    if (texture != nullptr) {
-        if (SDL_RenderCopy(renderer, texture, nullptr, &rect) != 0) {
-            std::cerr << "Error rendering card: " << SDL_GetError() << std::endl;
-        }
-    } else {
-        std::cerr << "Texture is nullptr for card: " << getCardSuitName(suit) << " " << getCardTypeName(type) << std::endl;
+    if (isFaceUp)
+    {
+        SDL_RenderCopy(renderer, faceUpTexture, nullptr, &rect);
+    } else
+    {
+        SDL_RenderCopy(renderer, faceDownTexture, nullptr, &rect);
     }
+
+
+    // if (faceUpTexture != nullptr) {
+    //     if (SDL_RenderCopy(renderer, faceUpTexture, nullptr, &rect) != 0) {
+    //         std::cerr << "Error rendering card face up: " << SDL_GetError() << std::endl;
+    //     }
+    // } else {
+    //     std::cerr << "Texture is nullptr for card face up: " << getCardSuitName(suit) << " " << getCardTypeName(type) << std::endl;
+    // }
 }
 
 void Card::handleEvent(const SDL_Event& event)
@@ -55,9 +80,9 @@ bool Card::loadTexture()
         return false;
     }
     
-    texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (texture == nullptr) {
-        std::cerr << "Failed to create texture from surface: " << SDL_GetError() << std::endl;
+    faceUpTexture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (faceUpTexture == nullptr) {
+        std::cerr << "Failed to create face up texture from surface: " << SDL_GetError() << std::endl;
         return false;
     }
 
@@ -162,11 +187,6 @@ std::string Card::getCardImagePath() const
     return basePath + imageName;
 }
 
-SDL_Texture* Card::getCardTexture() const
-{
-    return texture;
-}
-
 void Card::printCard() const
 {
     std::cout << "Card: " << getCardTypeName(type) << " of " << getCardSuitName(suit) << std::endl;
@@ -240,6 +260,10 @@ std::string Card::getCardSuitName(CardSuit s)
         default:
             return "Unknown";
     }
+}
+
+void Card::flip() {
+    isFaceUp = !isFaceUp;
 }
 
 int Card::getPositionX() const

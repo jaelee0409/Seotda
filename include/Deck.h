@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "game/Card.h"
+#include "Card.h"
 
 class Deck {
     public:

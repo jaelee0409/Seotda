@@ -24,6 +24,7 @@ class Game {
         void handleEvents();
         void update();
         void render();
+        bool loadFaceDownTexture();
 
         void startGame();
         void endGame();
