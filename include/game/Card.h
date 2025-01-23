@@ -46,6 +46,8 @@ class Card : public GameObject
         std::string getCardImagePath() const;
         SDL_Texture* getCardTexture() const;
         void printCard() const;
+        int getPositionX() const;
+        int getPositionY() const;
         void setPosition(int x, int y);
 
     private:

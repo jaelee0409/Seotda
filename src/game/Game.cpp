@@ -2,11 +2,10 @@
 #include <memory>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
+#include "Config.h"
 #include "game/Game.h"
-
-const int SCREEN_WIDTH = 1280;
-const int SCREEN_HEIGHT = 1024;
 
 Game::Game() : window(nullptr), renderer(nullptr), isRunning(false), deck(nullptr) {}
 
@@ -23,9 +22,14 @@ bool Game::initialize() {
         return false;
     }
 
+    if (TTF_Init() == -1) {
+        std::cerr << "TTF could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
+        return false;
+    }
+
     window = SDL_CreateWindow("Seotda Game",
                               SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                              SCREEN_WIDTH, SCREEN_HEIGHT,
+                              Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT,
                               SDL_WINDOW_SHOWN);
 
     if (!window) {

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SDL_image.h>
 
+#include "Config.h"
 #include "game/Card.h"
 
 Card::Card(CardSuit s, CardType t, SDL_Renderer* _renderer) : suit(s), type(t), renderer(_renderer)
@@ -10,10 +11,10 @@ Card::Card(CardSuit s, CardType t, SDL_Renderer* _renderer) : suit(s), type(t), 
         return;
     }
         
-    rect.x = 0;
-    rect.y = 0;
-    rect.w = 46;
-    rect.h = 72;
+    rect.x = Config::SCREEN_WIDTH / 2 - Config::CARD_WIDTH / 2;
+    rect.y = Config::SCREEN_HEIGHT / 2 - Config::CARD_HEIGHT / 2;
+    rect.w = Config::CARD_WIDTH;
+    rect.h = Config::CARD_HEIGHT;
 }
 
 Card::~Card()
@@ -241,7 +242,18 @@ std::string Card::getCardSuitName(CardSuit s)
     }
 }
 
-void Card::setPosition(int x, int y) {
+int Card::getPositionX() const
+{
+    return rect.x;
+}
+
+int Card::getPositionY() const
+{
+    return rect.y;
+}
+
+void Card::setPosition(int x, int y)
+{
     rect.x = x;
     rect.y = y;
 }

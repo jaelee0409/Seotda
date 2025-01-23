@@ -36,11 +36,8 @@ void Deck::initializeDeck()
 
     reset();
 
-    int xOffset = 100;  // Example spacing between cards
-    int yOffset = 100;
-
     for (size_t i = 0; i < cards.size(); ++i) {
-        cards[i]->setPosition(xOffset * (i % 5), yOffset * (i / 5)); // 5 cards per row
+        cards[i]->setPosition(cards[i]->getPositionX() + i,cards[i]->getPositionY() - i); // 5 cards per row
     }
 }
 
