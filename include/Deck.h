@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "Card.h"
 
@@ -10,14 +11,14 @@ class Deck {
 
         void initializeDeck();
         void shuffle();
-        Card* deal();
+        std::unique_ptr<Card> deal();
         void reset();
         bool isEmpty() const;
         void printDeck() const;
-        const std::vector<Card*>& getDeck() const;
+        const std::vector<std::unique_ptr<Card>>& getDeck() const;
 
     private:
-        SDL_Renderer* renderer;
-        std::vector<Card*> cards;
-        std::vector<Card*> fullDeck;
+        SDL_Renderer* m_Renderer;
+        std::vector<std::unique_ptr<Card>> m_Cards;
+        std::vector<std::unique_ptr<Card>> m_FullDeck;
 };

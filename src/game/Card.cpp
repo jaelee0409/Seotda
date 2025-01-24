@@ -4,55 +4,48 @@
 #include "Config.h"
 #include "Card.h"
 
-SDL_Texture* Card::faceDownTexture = nullptr;
+SDL_Texture* Card::s_FaceDownTexture = nullptr;
 
-Card::Card(CardSuit s, CardType t, SDL_Renderer* _renderer) : suit(s), type(t), renderer(_renderer), faceUpTexture(nullptr), isFaceUp(false)
-{
+Card::Card(CardID id, CardSuit s, CardType t, SDL_Renderer* _renderer) : m_Suit(s), m_Type(t), m_Renderer(_renderer), m_FaceUpTexture(nullptr), m_IsFaceUp(false) {
     if (!loadTexture()) {
         std::cerr << "Failed to load image: " << SDL_GetError() << std::endl;
         return;
     }
         
-    rect.x = Config::SCREEN_WIDTH / 2 - Config::CARD_WIDTH / 2;
-    rect.y = Config::SCREEN_HEIGHT / 2 - Config::CARD_HEIGHT / 2;
-    rect.w = Config::CARD_WIDTH;
-    rect.h = Config::CARD_HEIGHT;
+    m_Rect.x = Config::SCREEN_WIDTH / 2 - Config::CARD_WIDTH / 2;
+    m_Rect.y = Config::SCREEN_HEIGHT / 2 - Config::CARD_HEIGHT / 2;
+    m_Rect.w = Config::CARD_WIDTH;
+    m_Rect.h = Config::CARD_HEIGHT;
 }
 
-Card::~Card()
-{
-    if (faceUpTexture != nullptr) {
-        SDL_DestroyTexture(faceUpTexture);
-        faceUpTexture = nullptr;
+Card::~Card() {
+    if (m_FaceUpTexture != nullptr) {
+        SDL_DestroyTexture(m_FaceUpTexture);
+        m_FaceUpTexture = nullptr;
     }
 }
 
-void Card::setFaceDownTexture(SDL_Texture* texture)
-{
-    faceDownTexture = texture;
+void Card::setFaceDownTexture(SDL_Texture* texture) {
+    s_FaceDownTexture = texture;
 }
 
-void Card::destroyFaceDownTexture()
-{
-    if (faceDownTexture != nullptr) {
-        SDL_DestroyTexture(faceDownTexture);
-        faceDownTexture = nullptr;
+void Card::destroyFaceDownTexture() {
+    if (s_FaceDownTexture != nullptr) {
+        SDL_DestroyTexture(s_FaceDownTexture);
+        s_FaceDownTexture = nullptr;
     }
 }
 
-void Card::update()
-{
+void Card::update() {
 
 }
 
-void Card::render() const
-{
-    if (isFaceUp)
-    {
-        SDL_RenderCopy(renderer, faceUpTexture, nullptr, &rect);
-    } else
-    {
-        SDL_RenderCopy(renderer, faceDownTexture, nullptr, &rect);
+void Card::render() const {
+    if (m_IsFaceUp) {
+        SDL_RenderCopy(m_Renderer, m_FaceUpTexture, nullptr, &m_Rect);
+    }
+    else {
+        SDL_RenderCopy(m_Renderer, s_FaceDownTexture, nullptr, &m_Rect);
     }
 
 
@@ -65,23 +58,20 @@ void Card::render() const
     // }
 }
 
-void Card::handleEvent(const SDL_Event& event)
-{
+void Card::handleEvent(const SDL_Event& event) {
 
 }
 
-bool Card::loadTexture()
-{
+bool Card::loadTexture() {
     std::string imagePath = getCardImagePath();
     SDL_Surface* surface = IMG_Load(imagePath.c_str());
-    if (surface == nullptr)
-    {
+    if (surface == nullptr) {
         std::cerr << "IMG_Load error: " << IMG_GetError() << std::endl;
         return false;
     }
     
-    faceUpTexture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (faceUpTexture == nullptr) {
+    m_FaceUpTexture = SDL_CreateTextureFromSurface(m_Renderer, surface);
+    if (m_FaceUpTexture == nullptr) {
         std::cerr << "Failed to create face up texture from surface: " << SDL_GetError() << std::endl;
         return false;
     }
@@ -91,13 +81,11 @@ bool Card::loadTexture()
     return true;
 }
 
-std::string Card::getCardImagePath() const
-{
+std::string Card::getCardImagePath() const {
     std::string basePath = "assets/images/cards/";
     std::string imageName = "";
 
-    switch (suit)
-    {
+    switch (m_Suit) {
         case CardSuit::January:
             imageName += "january";
             break;
@@ -151,8 +139,7 @@ std::string Card::getCardImagePath() const
             break;
     }
 
-    switch (type)
-    {
+    switch (m_Type) {
         case CardType::Bright:
             imageName += "_bright";
             break;
@@ -187,13 +174,11 @@ std::string Card::getCardImagePath() const
     return basePath + imageName;
 }
 
-void Card::printCard() const
-{
-    std::cout << "Card: " << getCardTypeName(type) << " of " << getCardSuitName(suit) << std::endl;
+void Card::printCard() const {
+    std::cout << "Card: " << getCardTypeName(m_Type) << " of " << getCardSuitName(m_Suit) << std::endl;
 }
 
-std::string Card::getCardTypeName(CardType t)
-{
+std::string Card::getCardTypeName(CardType t) {
     switch(t) {
         case CardType::Bright:
             return "Bright";
@@ -218,8 +203,7 @@ std::string Card::getCardTypeName(CardType t)
     }
 }
 
-std::string Card::getCardSuitName(CardSuit s)
-{
+std::string Card::getCardSuitName(CardSuit s) {
     switch(s) {
         case CardSuit::January:
             return "January";
@@ -263,21 +247,22 @@ std::string Card::getCardSuitName(CardSuit s)
 }
 
 void Card::flip() {
-    isFaceUp = !isFaceUp;
+    m_IsFaceUp = !m_IsFaceUp;
 }
 
-int Card::getPositionX() const
-{
-    return rect.x;
+int Card::getPositionX() const {
+    return m_Rect.x;
 }
 
-int Card::getPositionY() const
-{
-    return rect.y;
+int Card::getPositionY() const {
+    return m_Rect.y;
 }
 
-void Card::setPosition(int x, int y)
-{
-    rect.x = x;
-    rect.y = y;
+void Card::setPosition(int x, int y) {
+    m_Rect.x = x;
+    m_Rect.y = y;
+}
+
+CardID Card::getCardID() const {
+    return m_Id;
 }

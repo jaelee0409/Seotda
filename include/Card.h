@@ -5,8 +5,7 @@
 
 #include "GameObject.h"
 
-enum class CardSuit : uint8_t
-{
+enum class CardSuit : uint8_t {
     January = 1,
     February,
     March,
@@ -21,8 +20,7 @@ enum class CardSuit : uint8_t
     December
 };
 
-enum class CardType : uint8_t
-{
+enum class CardType : uint8_t {
     Bright = 0,
     Animal,
     Ribbon,
@@ -31,12 +29,32 @@ enum class CardType : uint8_t
     DoubleJunk
 };
 
-class Card : public GameObject
-{
+enum class CardID : uint8_t {
+    JanuaryBright = 10,
+    JanuaryRibbon = 12,
+    FebruaryAnimal = 21,
+    FebruaryRibbon = 22,
+    MarchBright = 30,
+    MarchRibbon = 32,
+    AprilAnimal = 41,
+    AprilRibbon = 42,
+    MayRibbon = 52,
+    MayDoubleJunk = 55,
+    JuneAnimal = 61,
+    JuneRibbon = 62,
+    JulyAnimal = 71,
+    JulyRibbon = 72,
+    AugustBright = 80,
+    AugustAnimal = 81,
+    SeptemberRibbon = 92,
+    SeptemberDoubleJunk = 95,
+    OctoberAnimal = 101,
+    OctoberRibbon = 102
+};
+
+class Card : public GameObject {
     public:
-
-
-        Card(CardSuit s, CardType t, SDL_Renderer* renderer);
+        Card(CardID id, CardSuit s, CardType t, SDL_Renderer* renderer);
         ~Card();
 
         static void setFaceDownTexture(SDL_Texture* texture);
@@ -52,15 +70,17 @@ class Card : public GameObject
         int getPositionX() const;
         int getPositionY() const;
         void setPosition(int x, int y);
+        CardID getCardID() const;
 
     private:
-        SDL_Rect rect;
-        SDL_Renderer* renderer;
-        SDL_Texture* faceUpTexture;
-        static SDL_Texture* faceDownTexture;
-        CardSuit suit;
-        CardType type;
-        bool isFaceUp;
+        SDL_Rect m_Rect;
+        SDL_Renderer* m_Renderer;
+        SDL_Texture* m_FaceUpTexture;
+        static SDL_Texture* s_FaceDownTexture;
+        CardID m_Id;
+        CardSuit m_Suit;
+        CardType m_Type;
+        bool m_IsFaceUp;
 
         static std::string getCardSuitName(CardSuit s);
         static std::string getCardTypeName(CardType t);

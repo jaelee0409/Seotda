@@ -8,9 +8,13 @@
 #include "Game.h"
 #include "Card.h"
 
-Game::Game() : window(nullptr), renderer(nullptr), isRunning(false), deck(nullptr) {}
+Game::Game() : window(nullptr), renderer(nullptr), isRunning(false), deck(nullptr) {
 
-Game::~Game() {}
+}
+
+Game::~Game() {
+    
+}
 
 bool Game::initialize() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
@@ -28,7 +32,7 @@ bool Game::initialize() {
         return false;
     }
 
-    window = SDL_CreateWindow("Seotda Game",
+    window = SDL_CreateWindow("섯다 SEOTDA",
                               SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                               Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT,
                               SDL_WINDOW_SHOWN);
@@ -49,6 +53,8 @@ bool Game::initialize() {
     }
 
     deck = std::make_unique<Deck>(renderer);
+
+    deck->printDeck();
 
     isRunning = true;
 
@@ -99,20 +105,20 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-    switch (currentState) {
-        case GameState::WaitingForInput:
-            // Handle input and game logic
-            break;
-        case GameState::PlayerTurn:
-            // Handle player's turn
-            break;
-        case GameState::RoundEnded:
-            // End round and prepare for next round
-            break;
-        case GameState::GameOver:
-            // Handle game over logic
-            break;
-    }
+    // switch (currentState) {
+    //     case GameState::WaitingForInput:
+    //         // Handle input and game logic
+    //         break;
+    //     case GameState::PlayerTurn:
+    //         // Handle player's turn
+    //         break;
+    //     case GameState::RoundEnded:
+    //         // End round and prepare for next round
+    //         break;
+    //     case GameState::GameOver:
+    //         // Handle game over logic
+    //         break;
+    // }
 }
 
 void Game::render() {

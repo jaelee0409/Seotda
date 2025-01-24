@@ -5,12 +5,13 @@
 
 #include "Player.h"
 #include "Deck.h"
+#include "GameStateManager.h"
 
-enum class GameState {
-    WaitingForInput,
-    PlayerTurn,
-    RoundEnded,
-    GameOver
+enum class GameStateEnum {
+    Intro,
+    Menu,
+    Rules,
+    Gameplay
 };
 
 class Game {
@@ -38,7 +39,8 @@ class Game {
         SDL_Window* window;
         SDL_Renderer* renderer;
 
-        GameState currentState;
+        GameStateEnum currentState;
+        GameStateManager stateManager;
         std::vector<Player*> players;  // Vector of players (1 human, 4 AI)
         std::unique_ptr<Deck> deck;  // The card deck used in the game
         int pot;  // The total money pot for the current round
