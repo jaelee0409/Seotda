@@ -8,7 +8,7 @@
 #include "Game.h"
 #include "Card.h"
 
-Game::Game() : window(nullptr), renderer(nullptr), isRunning(false), deck(nullptr) {
+Game::Game() : m_Window(nullptr), m_Renderer(nullptr), m_IsRunning(false), m_Deck(nullptr), m_CurrentGameState(GameStateEnum::Intro) {
 
 }
 
@@ -23,51 +23,40 @@ bool Game::initialize() {
     }
 
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        std::cerr << "SDL_image could not initialize! IMG Error: " << IMG_GetError() << std::endl;
+        std::cerr << "SDL_Image could not initialize! IMG_Error: " << IMG_GetError() << std::endl;
         return false;
     }
 
     if (TTF_Init() == -1) {
-        std::cerr << "TTF could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
+        std::cerr << "SDL_TTF could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
         return false;
     }
 
-    window = SDL_CreateWindow("섯다 SEOTDA",
+    m_Window = SDL_CreateWindow("섯다 SEOTDA",
                               SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                               Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT,
                               SDL_WINDOW_SHOWN);
-
-    if (!window) {
+    if (m_Window == nullptr) {
         std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << "\n";
         return false;
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
+    m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
+    if (m_Renderer == nullptr) {
         std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << "\n";
         return false;
     }
 
-    if (renderer == nullptr) {
-        std::cerr << "Renderer is null. Check SDL_Renderer initialization." << std::endl;
-    }
-
-    deck = std::make_unique<Deck>(renderer);
-
-    deck->printDeck();
-
-    isRunning = true;
-
-    if (!loadFaceDownTexture()) {
-        std::cerr << "Error: Unable to load face-down texture!" << std::endl;
-        return false;
-    }
+    m_Deck = std::make_unique<Deck>(m_Renderer);
+    loadFaceDownTexture();
 
     return true;
 }
 
 void Game::run() {
-    while (isRunning) {
+    m_IsRunning = true;
+
+    while (m_IsRunning) {
         handleEvents();
         update();
         render();
@@ -77,14 +66,15 @@ void Game::run() {
 void Game::cleanUp() {
     Card::destroyFaceDownTexture();
 
-    if (renderer) {
-        SDL_DestroyRenderer(renderer);
-        renderer = nullptr;
+    if (m_Renderer) {
+        SDL_DestroyRenderer(m_Renderer);
+        m_Renderer = nullptr;
     }
-    if (window) {
-        SDL_DestroyWindow(window);
-        window = nullptr;
+    if (m_Window) {
+        SDL_DestroyWindow(m_Window);
+        m_Window = nullptr;
     }
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }
@@ -93,7 +83,7 @@ void Game::handleEvents() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            isRunning = false;
+            m_IsRunning = false;
         }
         else if (event.type == SDL_KEYDOWN) {
             // Handle key presses for game actions (deal cards, player input)
@@ -122,23 +112,31 @@ void Game::update() {
 }
 
 void Game::render() {
-    SDL_SetRenderDrawColor(renderer, 0, 128, 0, 255);
-    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(m_Renderer, 0, 128, 0, 255);
+    SDL_RenderClear(m_Renderer);
 
-    for (const auto& card : deck->getDeck()) {
+    for (const auto& card : m_Deck->getDeck()) {
         card->render();
     }
 
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(m_Renderer);
 }
 
 bool Game::loadFaceDownTexture() {
-    SDL_Texture* faceDownTexture = IMG_LoadTexture(renderer, "assets/images/cards/face_down.png");
+    SDL_Texture* faceDownTexture = IMG_LoadTexture(m_Renderer, "assets/images/cards/face_down.png");
     if (faceDownTexture == nullptr) {
-        std::cerr << "Failed to load card face down texture: " << IMG_GetError() << std::endl;
+        std::cerr << "Failed to load face down card texture: " << IMG_GetError() << std::endl;
         return false;
     }
-
     Card::setFaceDownTexture(faceDownTexture);
+    
     return true;
+}
+
+GameStateEnum Game::getCurrentGameState() const {
+    return m_CurrentGameState;
+}
+
+void Game::setGameState(GameStateEnum state) {
+    m_CurrentGameState = state;
 }

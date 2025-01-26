@@ -31,18 +31,19 @@ class Game {
         void endGame();
         void playRound();
         void dealCards();  // Distribute cards to players
-        void updateGameState();
+        GameStateEnum getCurrentGameState() const;
+        void setGameState(GameStateEnum state);
         void bettingRound();  // Manage the betting round (bet, call, all-in, fold)
 
     private:
-        bool isRunning;
-        SDL_Window* window;
-        SDL_Renderer* renderer;
+        bool m_IsRunning;
+        SDL_Window* m_Window;
+        SDL_Renderer* m_Renderer;
 
-        GameStateEnum currentState;
-        GameStateManager stateManager;
-        std::vector<Player*> players;  // Vector of players (1 human, 4 AI)
-        std::unique_ptr<Deck> deck;  // The card deck used in the game
-        int pot;  // The total money pot for the current round
-        int currentBet;  // The current bet across all players
+        GameStateEnum m_CurrentGameState;
+        GameStateManager m_StateManager;
+        std::vector<Player*> m_Players;  // Vector of players (1 human, 4 AI)
+        std::unique_ptr<Deck> m_Deck;  // The card deck used in the game
+        int m_Pot;  // The total money pot for the current round
+        int m_CurrentBet;  // The current bet across all players
 };

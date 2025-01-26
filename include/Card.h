@@ -73,17 +73,18 @@ class Card : public GameObject {
         CardID getCardID() const;
 
     private:
-        SDL_Rect m_Rect;
-        SDL_Renderer* m_Renderer;
-        SDL_Texture* m_FaceUpTexture;
-        static SDL_Texture* s_FaceDownTexture;
-        CardID m_Id;
-        CardSuit m_Suit;
-        CardType m_Type;
-        bool m_IsFaceUp;
-
         static std::string getCardSuitName(CardSuit s);
         static std::string getCardTypeName(CardType t);
 
         bool loadTexture();
+
+        static SDL_Texture* s_FaceDownTexture;
+
+        SDL_Rect m_Rect;
+        SDL_Renderer* m_Renderer;
+        SDL_Texture* m_FaceUpTexture;
+        CardID m_Id;
+        CardSuit m_Suit;
+        CardType m_Type;
+        bool m_IsFaceUp;
 };

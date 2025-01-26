@@ -18,7 +18,8 @@ class Deck {
         const std::vector<std::unique_ptr<Card>>& getDeck() const;
 
     private:
-        SDL_Renderer* m_Renderer;
         std::vector<std::unique_ptr<Card>> m_Cards;
         std::vector<std::unique_ptr<Card>> m_FullDeck;
+
+        SDL_Renderer* m_Renderer;
 };

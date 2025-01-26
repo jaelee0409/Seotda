@@ -3,10 +3,13 @@
 
 #include "Config.h"
 #include "Card.h"
+#include "Game.h"
 
 SDL_Texture* Card::s_FaceDownTexture = nullptr;
 
-Card::Card(CardID id, CardSuit s, CardType t, SDL_Renderer* _renderer) : m_Suit(s), m_Type(t), m_Renderer(_renderer), m_FaceUpTexture(nullptr), m_IsFaceUp(false) {
+Card::Card(CardID id, CardSuit s, CardType t, SDL_Renderer* _renderer)
+    : m_Suit(s), m_Type(t), m_Renderer(_renderer), m_FaceUpTexture(nullptr), m_IsFaceUp(false) {
+
     if (!loadTexture()) {
         std::cerr << "Failed to load image: " << SDL_GetError() << std::endl;
         return;
@@ -30,10 +33,11 @@ void Card::setFaceDownTexture(SDL_Texture* texture) {
 }
 
 void Card::destroyFaceDownTexture() {
-    if (s_FaceDownTexture != nullptr) {
-        SDL_DestroyTexture(s_FaceDownTexture);
-        s_FaceDownTexture = nullptr;
-    }
+    if (s_FaceDownTexture == nullptr)
+        return;
+
+    SDL_DestroyTexture(s_FaceDownTexture);
+    s_FaceDownTexture = nullptr;
 }
 
 void Card::update() {
@@ -41,21 +45,19 @@ void Card::update() {
 }
 
 void Card::render() const {
+    // if (getCurrentGameState() != GameStateEnum::Gameplay) // TODO: If you are not in the gameplay state
+    //     return;
+
     if (m_IsFaceUp) {
-        SDL_RenderCopy(m_Renderer, m_FaceUpTexture, nullptr, &m_Rect);
+        if (SDL_RenderCopy(m_Renderer, m_FaceUpTexture, nullptr, &m_Rect) != 0) {
+            std::cerr << "Error rendering card face up: " << SDL_GetError() << std::endl;
+        }
     }
     else {
-        SDL_RenderCopy(m_Renderer, s_FaceDownTexture, nullptr, &m_Rect);
+        if (SDL_RenderCopy(m_Renderer, s_FaceDownTexture, nullptr, &m_Rect) != 0) {
+            std::cerr << "Error rendering card face down: " << SDL_GetError() << std::endl;
+        }
     }
-
-
-    // if (faceUpTexture != nullptr) {
-    //     if (SDL_RenderCopy(renderer, faceUpTexture, nullptr, &rect) != 0) {
-    //         std::cerr << "Error rendering card face up: " << SDL_GetError() << std::endl;
-    //     }
-    // } else {
-    //     std::cerr << "Texture is nullptr for card face up: " << getCardSuitName(suit) << " " << getCardTypeName(type) << std::endl;
-    // }
 }
 
 void Card::handleEvent(const SDL_Event& event) {
