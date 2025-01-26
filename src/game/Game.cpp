@@ -8,12 +8,18 @@
 #include "Game.h"
 #include "Card.h"
 
-Game::Game() : m_Window(nullptr), m_Renderer(nullptr), m_IsRunning(false), m_Deck(nullptr), m_CurrentGameState(GameStateEnum::Intro) {
+GameStateManager Game::s_GameStateManager;
+
+Game::Game() : m_Window(nullptr), m_Renderer(nullptr), m_IsRunning(false), m_Deck(nullptr) {
 
 }
 
 Game::~Game() {
     
+}
+
+GameStateManager& Game::getGameStateManager() {
+    return s_GameStateManager;
 }
 
 bool Game::initialize() {
@@ -47,8 +53,11 @@ bool Game::initialize() {
         return false;
     }
 
-    m_Deck = std::make_unique<Deck>(m_Renderer);
+    // Create the deck
+    m_Deck.initializeDeck(m_Renderer);
     loadFaceDownTexture();
+
+    // Initialize players
 
     return true;
 }
@@ -88,13 +97,14 @@ void Game::handleEvents() {
         else if (event.type == SDL_KEYDOWN) {
             // Handle key presses for game actions (deal cards, player input)
             if (event.key.keysym.sym == SDLK_d) {  // Example: Deal cards on 'D' key press
-                //deck.deal().printCard();
+                dealCard();
             }
         }
     }
 }
 
 void Game::update() {
+    
     // switch (currentState) {
     //     case GameState::WaitingForInput:
     //         // Handle input and game logic
@@ -115,28 +125,29 @@ void Game::render() {
     SDL_SetRenderDrawColor(m_Renderer, 0, 128, 0, 255);
     SDL_RenderClear(m_Renderer);
 
-    for (const auto& card : m_Deck->getDeck()) {
-        card->render();
+    if (s_GameStateManager.getCurrentGameState() == GameStateEnum::Gameplay) {
+        for (const auto& card : m_Deck.getDeck()) {
+            card.render();
+        }
+        for (const auto& card : m_PlayerHand) {
+            card.render();
+        }
     }
-
+    
     SDL_RenderPresent(m_Renderer);
 }
 
 bool Game::loadFaceDownTexture() {
-    SDL_Texture* faceDownTexture = IMG_LoadTexture(m_Renderer, "assets/images/cards/face_down.png");
-    if (faceDownTexture == nullptr) {
-        std::cerr << "Failed to load face down card texture: " << IMG_GetError() << std::endl;
+    if (!Card::loadFaceDownTexture(m_Renderer)) {
+        std::cerr << "Failed to load face down texture in Game." << std::endl;
         return false;
     }
-    Card::setFaceDownTexture(faceDownTexture);
-    
     return true;
 }
 
-GameStateEnum Game::getCurrentGameState() const {
-    return m_CurrentGameState;
-}
-
-void Game::setGameState(GameStateEnum state) {
-    m_CurrentGameState = state;
+void Game::dealCard() {
+    Card dealtCard = m_Deck.deal();
+    m_PlayerHand.push_back(dealtCard);
+    SDL_Rect playerHandPosition = { 100, 100, 0, 0 };
+    m_Deck.animateDealCard(dealtCard, playerHandPosition, 0.1f);
 }

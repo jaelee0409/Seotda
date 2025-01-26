@@ -7,25 +7,43 @@
 
 SDL_Texture* Card::s_FaceDownTexture = nullptr;
 
+Card::Card()
+    : m_Id(CardID::JanuaryBright), m_Suit(CardSuit::January), m_Type(CardType::Bright), m_Renderer(nullptr), m_FaceUpTexture(nullptr), m_IsFaceUp(false) {
+
+}
+
 Card::Card(CardID id, CardSuit s, CardType t, SDL_Renderer* _renderer)
-    : m_Suit(s), m_Type(t), m_Renderer(_renderer), m_FaceUpTexture(nullptr), m_IsFaceUp(false) {
+    : m_Id(id), m_Suit(s), m_Type(t), m_Renderer(_renderer), m_FaceUpTexture(nullptr), m_IsFaceUp(false) {
 
     if (!loadTexture()) {
         std::cerr << "Failed to load image: " << SDL_GetError() << std::endl;
         return;
     }
-        
-    m_Rect.x = Config::SCREEN_WIDTH / 2 - Config::CARD_WIDTH / 2;
-    m_Rect.y = Config::SCREEN_HEIGHT / 2 - Config::CARD_HEIGHT / 2;
-    m_Rect.w = Config::CARD_WIDTH;
-    m_Rect.h = Config::CARD_HEIGHT;
+
+    setRect(Config::SCREEN_WIDTH / 2 - Config::CARD_WIDTH / 2, Config::SCREEN_HEIGHT / 2 - Config::CARD_HEIGHT / 2, Config::CARD_WIDTH, Config::CARD_HEIGHT);
 }
 
 Card::~Card() {
-    if (m_FaceUpTexture != nullptr) {
-        SDL_DestroyTexture(m_FaceUpTexture);
-        m_FaceUpTexture = nullptr;
+    if (m_FaceUpTexture == nullptr)
+        return;
+
+    SDL_DestroyTexture(m_FaceUpTexture);
+    m_FaceUpTexture = nullptr;
+}
+
+bool Card::loadFaceDownTexture(SDL_Renderer* renderer) {
+    if (s_FaceDownTexture == nullptr) {
+        s_FaceDownTexture = IMG_LoadTexture(renderer, "assets/images/cards/face_down.png");
+        if (s_FaceDownTexture == nullptr) {
+            std::cerr << "Failed to load face down card texture: " << IMG_GetError() << std::endl;
+            return false;
+        }
     }
+    return true;
+}
+
+SDL_Texture* Card::getFaceDownTexture() {
+    return s_FaceDownTexture;
 }
 
 void Card::setFaceDownTexture(SDL_Texture* texture) {
@@ -260,9 +278,28 @@ int Card::getPositionY() const {
     return m_Rect.y;
 }
 
+void Card::setPositionX(int x) {
+    m_Rect.x = x;
+}
+
+void Card::setPositionY(int y) {
+    m_Rect.y = y;
+}
+
 void Card::setPosition(int x, int y) {
     m_Rect.x = x;
     m_Rect.y = y;
+}
+
+const SDL_Rect& Card::getRect() const {
+    return m_Rect;
+}
+
+void Card::setRect(int x, int y, int w, int h) {
+    m_Rect.x = x;
+    m_Rect.y = y;
+    m_Rect.w = w;
+    m_Rect.h = h;
 }
 
 CardID Card::getCardID() const {

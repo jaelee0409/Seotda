@@ -54,9 +54,12 @@ enum class CardID : uint8_t {
 
 class Card : public GameObject {
     public:
+        Card();
         Card(CardID id, CardSuit s, CardType t, SDL_Renderer* renderer);
         ~Card();
 
+        static bool loadFaceDownTexture(SDL_Renderer* renderer);
+        static SDL_Texture* getFaceDownTexture();
         static void setFaceDownTexture(SDL_Texture* texture);
         static void destroyFaceDownTexture();
 
@@ -69,16 +72,19 @@ class Card : public GameObject {
         void flip();
         int getPositionX() const;
         int getPositionY() const;
+        void setPositionX(int x);
+        void setPositionY(int y);
         void setPosition(int x, int y);
+        const SDL_Rect& getRect() const;
+        void setRect(int x, int y, int w, int h);
         CardID getCardID() const;
 
     private:
         static std::string getCardSuitName(CardSuit s);
         static std::string getCardTypeName(CardType t);
+        static SDL_Texture* s_FaceDownTexture;
 
         bool loadTexture();
-
-        static SDL_Texture* s_FaceDownTexture;
 
         SDL_Rect m_Rect;
         SDL_Renderer* m_Renderer;

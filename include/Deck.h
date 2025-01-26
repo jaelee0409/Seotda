@@ -8,18 +8,20 @@
 class Deck {
     public:
         Deck(SDL_Renderer* renderer);
+        ~Deck();
 
-        void initializeDeck();
+        void initializeDeck(SDL_Renderer* renderer);
         void shuffle();
-        std::unique_ptr<Card> deal();
+        Card deal();
         void reset();
         bool isEmpty() const;
         void printDeck() const;
-        const std::vector<std::unique_ptr<Card>>& getDeck() const;
+        const std::vector<Card>& getDeck() const;
+        void animateDealCard(Card& card, const SDL_Rect& dest, float speed);
 
     private:
-        std::vector<std::unique_ptr<Card>> m_Cards;
-        std::vector<std::unique_ptr<Card>> m_FullDeck;
+        std::vector<Card> m_Cards;
+        std::vector<Card> m_FullDeck;
 
         SDL_Renderer* m_Renderer;
 };

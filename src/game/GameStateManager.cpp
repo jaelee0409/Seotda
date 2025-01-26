@@ -1,8 +1,15 @@
-#include "GameStateManager.h"
-
 #include <stack>
 
+#include "GameStateManager.h"
 #include "GameState.h"
+
+GameStateManager::GameStateManager() : m_CurrentGameState(GameStateEnum::Gameplay) {
+
+}
+
+GameStateManager::~GameStateManager() {
+
+}
 
 void GameStateManager::pushState(GameState* state) {
     if (!stateStack.empty()) {
@@ -33,4 +40,12 @@ void GameStateManager::render() {
     if (!stateStack.empty()) {
         stateStack.top()->render();
     }
+}
+
+GameStateEnum GameStateManager::getCurrentGameState() const {
+    return m_CurrentGameState;
+}
+
+void GameStateManager::setGameState(GameStateEnum state) {
+    m_CurrentGameState = state;
 }
