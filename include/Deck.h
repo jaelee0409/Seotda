@@ -10,6 +10,11 @@ class Deck {
         Deck(SDL_Renderer* renderer);
         ~Deck();
 
+        static bool loadFaceDownTexture(SDL_Renderer* renderer);
+        static SDL_Texture* getFaceDownTexture();
+        static void setFaceDownTexture(SDL_Texture* texture);
+        static void destroyFaceDownTexture();
+
         void initializeDeck(SDL_Renderer* renderer);
         void shuffle();
         Card deal();
@@ -20,7 +25,8 @@ class Deck {
         void animateDealCard(Card& card, const SDL_Rect& dest, float speed);
 
     private:
-        std::vector<Card> m_Cards;
+        static SDL_Texture* s_FaceDownTexture;
+        std::vector<Card> m_CurrentDeck;
         std::vector<Card> m_FullDeck;
 
         SDL_Renderer* m_Renderer;

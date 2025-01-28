@@ -3,15 +3,45 @@
 #include <random>
 #include <vector>
 #include <memory>
+#include <SDL_image.h>
 
 #include "Deck.h"
 #include "Card.h"
+
+SDL_Texture* Deck::s_FaceDownTexture = nullptr;
 
 Deck::Deck(SDL_Renderer* renderer) {
 }
 
 Deck::~Deck() {
     m_Renderer = nullptr;
+}
+
+bool Deck::loadFaceDownTexture(SDL_Renderer* renderer) {
+    if (s_FaceDownTexture == nullptr) {
+        s_FaceDownTexture = IMG_LoadTexture(renderer, "assets/images/cards/face_down.png");
+        if (s_FaceDownTexture == nullptr) {
+            std::cerr << "Failed to load face down card texture: " << IMG_GetError() << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+SDL_Texture* Deck::getFaceDownTexture() {
+    return s_FaceDownTexture;
+}
+
+void Deck::setFaceDownTexture(SDL_Texture* texture) {
+    s_FaceDownTexture = texture;
+}
+
+void Deck::destroyFaceDownTexture() {
+    if (s_FaceDownTexture == nullptr)
+        return;
+
+    SDL_DestroyTexture(s_FaceDownTexture);
+    s_FaceDownTexture = nullptr;
 }
 
 void Deck::initializeDeck(SDL_Renderer* renderer) {
@@ -38,50 +68,50 @@ void Deck::initializeDeck(SDL_Renderer* renderer) {
     m_FullDeck.push_back(Card(CardID::OctoberRibbon, CardSuit::October, CardType::Ribbon, m_Renderer));
 
     reset();
-
-    for (size_t i = 0; i < m_Cards.size(); ++i) {
-        m_Cards[i].setPosition(m_Cards[i].getPositionX() + i, m_Cards[i].getPositionY() - i);
-    }
 }
 
 void Deck::shuffle() {
     std::random_device rd;
     std::mt19937 g(rd());
-    std::shuffle(m_Cards.begin(), m_Cards.end(), g);
+    std::shuffle(m_CurrentDeck.begin(), m_CurrentDeck.end(), g);
 }
 
 Card Deck::deal() {
-    if (m_Cards.empty()) {
+    if (m_CurrentDeck.empty()) {
         std::cerr << "No more cards in the deck!" << std::endl;
         return Card();
     }
 
     // Deal the top card (remove from the deck)
-    Card dealtCard = m_Cards.back();
-    m_Cards.pop_back();
+    Card dealtCard = m_CurrentDeck.back();
+    m_CurrentDeck.pop_back();
     return dealtCard;
 }
 
 void Deck::reset() {
-    m_Cards.clear();
+    m_CurrentDeck.clear();
     for (auto& card : m_FullDeck) {
-        m_Cards.push_back(card);
+        m_CurrentDeck.push_back(card);
     }
     shuffle();
+
+    for (size_t i = 0; i < m_CurrentDeck.size(); ++i) {
+        m_CurrentDeck[i].setPosition(m_CurrentDeck[i].getPositionX() + i, m_CurrentDeck[i].getPositionY() - i);
+    }
 }
 
 bool Deck::isEmpty() const {
-    return m_Cards.empty();
+    return m_CurrentDeck.empty();
 }
 
 void Deck::printDeck() const {
-    for (const auto& card : m_Cards) {
+    for (const auto& card : m_CurrentDeck) {
         card.printCard();
     }
 }
 
 const std::vector<Card>& Deck::getDeck() const {
-    return m_Cards;
+    return m_CurrentDeck;
 }
 
 void Deck::animateDealCard(Card& card, const SDL_Rect& dest, float speed) {

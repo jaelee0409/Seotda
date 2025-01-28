@@ -5,8 +5,6 @@
 #include "Card.h"
 #include "Game.h"
 
-SDL_Texture* Card::s_FaceDownTexture = nullptr;
-
 Card::Card()
     : m_Id(CardID::JanuaryBright), m_Suit(CardSuit::January), m_Type(CardType::Bright), m_Renderer(nullptr), m_FaceUpTexture(nullptr), m_IsFaceUp(false) {
 
@@ -31,33 +29,6 @@ Card::~Card() {
     m_FaceUpTexture = nullptr;
 }
 
-bool Card::loadFaceDownTexture(SDL_Renderer* renderer) {
-    if (s_FaceDownTexture == nullptr) {
-        s_FaceDownTexture = IMG_LoadTexture(renderer, "assets/images/cards/face_down.png");
-        if (s_FaceDownTexture == nullptr) {
-            std::cerr << "Failed to load face down card texture: " << IMG_GetError() << std::endl;
-            return false;
-        }
-    }
-    return true;
-}
-
-SDL_Texture* Card::getFaceDownTexture() {
-    return s_FaceDownTexture;
-}
-
-void Card::setFaceDownTexture(SDL_Texture* texture) {
-    s_FaceDownTexture = texture;
-}
-
-void Card::destroyFaceDownTexture() {
-    if (s_FaceDownTexture == nullptr)
-        return;
-
-    SDL_DestroyTexture(s_FaceDownTexture);
-    s_FaceDownTexture = nullptr;
-}
-
 void Card::update() {
 
 }
@@ -65,16 +36,9 @@ void Card::update() {
 void Card::render() const {
     // if (getCurrentGameState() != GameStateEnum::Gameplay) // TODO: If you are not in the gameplay state
     //     return;
-
-    if (m_IsFaceUp) {
-        if (SDL_RenderCopy(m_Renderer, m_FaceUpTexture, nullptr, &m_Rect) != 0) {
-            std::cerr << "Error rendering card face up: " << SDL_GetError() << std::endl;
-        }
-    }
-    else {
-        if (SDL_RenderCopy(m_Renderer, s_FaceDownTexture, nullptr, &m_Rect) != 0) {
-            std::cerr << "Error rendering card face down: " << SDL_GetError() << std::endl;
-        }
+    SDL_Texture* texture = m_IsFaceUp ? m_FaceUpTexture : Deck::getFaceDownTexture();
+    if (SDL_RenderCopy(m_Renderer, texture, nullptr, &m_Rect) != 0) {
+        std::cerr << "[Card::render] Error rendering card: " << SDL_GetError() << std::endl;
     }
 }
 
@@ -196,6 +160,10 @@ std::string Card::getCardImagePath() const {
 
 void Card::printCard() const {
     std::cout << "Card: " << getCardTypeName(m_Type) << " of " << getCardSuitName(m_Suit) << std::endl;
+}
+
+bool Card::getIsFaceUp() const {
+    return m_IsFaceUp;
 }
 
 std::string Card::getCardTypeName(CardType t) {

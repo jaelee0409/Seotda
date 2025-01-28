@@ -58,17 +58,13 @@ class Card : public GameObject {
         Card(CardID id, CardSuit s, CardType t, SDL_Renderer* renderer);
         ~Card();
 
-        static bool loadFaceDownTexture(SDL_Renderer* renderer);
-        static SDL_Texture* getFaceDownTexture();
-        static void setFaceDownTexture(SDL_Texture* texture);
-        static void destroyFaceDownTexture();
-
         void update() override;
         void render() const override;
         void handleEvent(const SDL_Event& event) override;
         
         std::string getCardImagePath() const;
         void printCard() const;
+        bool getIsFaceUp() const;
         void flip();
         int getPositionX() const;
         int getPositionY() const;
@@ -81,8 +77,7 @@ class Card : public GameObject {
 
     private:
         static std::string getCardSuitName(CardSuit s);
-        static std::string getCardTypeName(CardType t);
-        static SDL_Texture* s_FaceDownTexture;
+        static std::string getCardTypeName(CardType t);        
 
         bool loadTexture();
 

@@ -20,7 +20,6 @@ class Game {
         void handleEvents();
         void update();
         void render();
-        bool loadFaceDownTexture();
 
         void startGame();
         void endGame();
@@ -39,5 +38,5 @@ class Game {
         
         int m_Pot;  // The total money pot for the current round
         int m_CurrentBet;  // The current bet across all players
-        std::vector<Card> m_PlayerHand;
+        std::vector<Player*> players;
 };

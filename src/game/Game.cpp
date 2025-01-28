@@ -7,6 +7,9 @@
 #include "Config.h"
 #include "Game.h"
 #include "Card.h"
+#include "HumanPlayer.h"
+#include "AIPlayer.h"
+#include "Player.h"
 
 GameStateManager Game::s_GameStateManager;
 
@@ -24,17 +27,17 @@ GameStateManager& Game::getGameStateManager() {
 
 bool Game::initialize() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
-        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << "\n";
+        std::cerr << "[Game::initialize] SDL could not initialize! SDL_Error: " << SDL_GetError() << "\n";
         return false;
     }
 
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        std::cerr << "SDL_Image could not initialize! IMG_Error: " << IMG_GetError() << std::endl;
+        std::cerr << "[Game::initialize] SDL_Image could not initialize! IMG_Error: " << IMG_GetError() << std::endl;
         return false;
     }
 
     if (TTF_Init() == -1) {
-        std::cerr << "SDL_TTF could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
+        std::cerr << "[Game::initialize] SDL_TTF could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
         return false;
     }
 
@@ -43,21 +46,32 @@ bool Game::initialize() {
                               Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT,
                               SDL_WINDOW_SHOWN);
     if (m_Window == nullptr) {
-        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << "\n";
+        std::cerr << "[Game::initialize] Window could not be created! SDL_Error: " << SDL_GetError() << "\n";
         return false;
     }
 
     m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
     if (m_Renderer == nullptr) {
-        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << "\n";
+        std::cerr << "[Game::initialize] Renderer could not be created! SDL_Error: " << SDL_GetError() << "\n";
         return false;
     }
 
     // Create the deck
     m_Deck.initializeDeck(m_Renderer);
-    loadFaceDownTexture();
+    if (!Deck::loadFaceDownTexture(m_Renderer)) {
+        std::cerr << "[Game::initialize] Deck could not load face down card texture! : " << SDL_GetError() << "\n";
+        return false;
+    }
 
     // Initialize players
+    HumanPlayer* humanPlayer = new HumanPlayer();
+    players.push_back(humanPlayer);
+
+    // Create 4 AI players and add them to the players vector
+    for (int i = 0; i < 4; ++i) {
+        AIPlayer* aiPlayer = new AIPlayer();
+        players.push_back(aiPlayer);
+    }
 
     return true;
 }
@@ -73,7 +87,11 @@ void Game::run() {
 }
 
 void Game::cleanUp() {
-    Card::destroyFaceDownTexture();
+    for (Player* player : players) {
+            delete player;
+    }
+
+    Deck::destroyFaceDownTexture();
 
     if (m_Renderer) {
         SDL_DestroyRenderer(m_Renderer);
@@ -129,25 +147,22 @@ void Game::render() {
         for (const auto& card : m_Deck.getDeck()) {
             card.render();
         }
-        for (const auto& card : m_PlayerHand) {
-            card.render();
+        for (size_t i = 0; i < players.size(); ++i) {
+            players[i]->renderHand();
         }
     }
     
     SDL_RenderPresent(m_Renderer);
 }
 
-bool Game::loadFaceDownTexture() {
-    if (!Card::loadFaceDownTexture(m_Renderer)) {
-        std::cerr << "Failed to load face down texture in Game." << std::endl;
-        return false;
-    }
-    return true;
-}
-
 void Game::dealCard() {
-    Card dealtCard = m_Deck.deal();
-    m_PlayerHand.push_back(dealtCard);
-    SDL_Rect playerHandPosition = { 100, 100, 0, 0 };
-    m_Deck.animateDealCard(dealtCard, playerHandPosition, 0.1f);
+    Card* dealtCard1 = &m_Deck.back();
+    //Card dealtCard2 = m_Deck.deal();
+    players[0]->addCardToHand(dealtCard1);
+    //players[0]->addCardToHand(dealtCard2);
+    players[0]->flipCardInHand(0);
+    SDL_Rect playerHandPosition;
+    playerHandPosition.x = 0;
+    playerHandPosition.y = 0;
+    //m_Deck.animateDealCard(dealtCard1, playerHandPosition, 0.1f);
 }
