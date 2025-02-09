@@ -13,7 +13,7 @@
 
 GameStateManager Game::s_GameStateManager;
 
-Game::Game() : m_Window(nullptr), m_Renderer(nullptr), m_IsRunning(false), m_Deck(nullptr) {
+Game::Game() : m_Window(nullptr), m_Renderer(nullptr), m_IsRunning(false) {
 
 }
 
@@ -56,21 +56,21 @@ bool Game::initialize() {
         return false;
     }
 
-    // Create the deck
-    m_Deck.initializeDeck(m_Renderer);
-    if (!Deck::loadFaceDownTexture(m_Renderer)) {
-        std::cerr << "[Game::initialize] Deck could not load face down card texture! : " << SDL_GetError() << "\n";
+    // Load face down card texture
+    if (!Card::loadFaceDownTexture(m_Renderer)) {
+        std::cerr << "[Game::initialize] Failed to load face-down card texture." << std::endl;
         return false;
     }
 
+    // Initialize the deck
+    m_Deck.initializeDeck(m_Renderer);
+
     // Initialize players
-    HumanPlayer* humanPlayer = new HumanPlayer();
-    players.push_back(humanPlayer);
+    m_Players.push_back(std::make_unique<HumanPlayer>());
 
     // Create 4 AI players and add them to the players vector
     for (int i = 0; i < 4; ++i) {
-        AIPlayer* aiPlayer = new AIPlayer();
-        players.push_back(aiPlayer);
+        m_Players.push_back(std::make_unique<AIPlayer>(i));
     }
 
     return true;
@@ -87,11 +87,9 @@ void Game::run() {
 }
 
 void Game::cleanUp() {
-    for (Player* player : players) {
-            delete player;
-    }
+    m_Players.clear();
 
-    Deck::destroyFaceDownTexture();
+    Card::destroyFaceDownTexture();
 
     if (m_Renderer) {
         SDL_DestroyRenderer(m_Renderer);
@@ -114,15 +112,33 @@ void Game::handleEvents() {
         }
         else if (event.type == SDL_KEYDOWN) {
             // Handle key presses for game actions (deal cards, player input)
-            if (event.key.keysym.sym == SDLK_d) {  // Example: Deal cards on 'D' key press
-                dealCard();
+            if (event.key.keysym.sym == SDLK_d) {
+                dealCards();
+            }
+            else if (event.key.keysym.sym == SDLK_f) {
+                for (auto& player : m_Players) {
+                    player->flipHand();
+                }
+            }
+            else if (event.key.keysym.sym == SDLK_r) {
+                m_Deck.reshuffle();
+
+                for (auto& player : m_Players) {
+                    player->resetHand();
+                }
             }
         }
     }
 }
 
 void Game::update() {
-    
+    for (auto& player : m_Players) {
+        auto& hand = player->getHand();
+        if (hand.first)
+            hand.first->update();
+        if (hand.second)
+            hand.second->update();
+    }
     // switch (currentState) {
     //     case GameState::WaitingForInput:
     //         // Handle input and game logic
@@ -145,24 +161,59 @@ void Game::render() {
 
     if (s_GameStateManager.getCurrentGameState() == GameStateEnum::Gameplay) {
         for (const auto& card : m_Deck.getDeck()) {
-            card.render();
+            card->render();
         }
-        for (size_t i = 0; i < players.size(); ++i) {
-            players[i]->renderHand();
+        for (auto& player : m_Players) {
+            if (player->getHand().first || player->getHand().second) { // Ensure at least one card exists
+                player->renderHand();
+            }
         }
     }
     
     SDL_RenderPresent(m_Renderer);
 }
 
-void Game::dealCard() {
-    Card* dealtCard1 = &m_Deck.back();
-    //Card dealtCard2 = m_Deck.deal();
-    players[0]->addCardToHand(dealtCard1);
-    //players[0]->addCardToHand(dealtCard2);
-    players[0]->flipCardInHand(0);
-    SDL_Rect playerHandPosition;
-    playerHandPosition.x = 0;
-    playerHandPosition.y = 0;
-    //m_Deck.animateDealCard(dealtCard1, playerHandPosition, 0.1f);
+void startGame() {
+
+}
+        
+
+void Game::dealCards() {
+    for (auto& player : m_Players) {
+        if (player->hasHand()) {
+            std::cerr << "[Game::dealCards] Cards are already dealt. Cannot redeal!" << std::endl;
+            return;  // Prevent dealing if hands are already full
+        }
+    }
+
+    for (auto& player : m_Players) {
+        SDL_Rect target1 = player->getPosition();
+        SDL_Rect target2 = { target1.x + 30, target1.y, Config::CARD_WIDTH, Config::CARD_HEIGHT };
+
+        std::unique_ptr<Card> card1 = m_Deck.deal();
+        std::unique_ptr<Card> card2 = m_Deck.deal();
+
+        if (card1 && card2) {
+            card1->startMoving(target1, 500);
+            card2->startMoving(target2, 500);
+
+            player->addCardToHand(std::move(card1));
+            player->addCardToHand(std::move(card2));
+        }
+        else {
+            std::cerr << "[Game::dealCards] Not enough cards to deal!" << std::endl;
+        }
+    }
+}
+
+void bettingPhase() {
+
+}
+
+void evaluateHands() {
+
+}
+
+void nextRound() {
+
 }

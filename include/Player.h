@@ -2,34 +2,29 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "Card.h"
 
 class Player {
     public:
-        // Virtual destructor to ensure proper cleanup when deleting derived classes
-        virtual ~Player() {}
+        Player();
+        Player(int x, int y);
+        virtual ~Player() = default;
 
-        // Add a card to the player's hand
-        virtual void addCardToHand(Card* card) {
-            hand.push_back(card);
-        }
+        virtual void addCardToHand(std::unique_ptr<Card> card);
+        virtual void renderHand() const;
+        virtual void resetHand();
 
-        // Abstract method that must be implemented by the derived classes to render the player's hand
-        virtual void renderHand() = 0;
-
-        // You can also include a method to get the number of cards for each player, if needed
-        size_t getHandSize() const {
-            return hand.size();
-        }
+        const std::pair<std::unique_ptr<Card>, std::unique_ptr<Card>>& getHand() const;
+        SDL_Rect getPosition() const { return m_Position; }
+        
 
         // Optionally, a method to flip a card for testing purposes
-        void flipCardInHand(int index) {
-            if (index >= 0 && index < hand.size()) {
-                hand[index]->flip();
-            }
-        }
+        void flipHand();
+        bool hasHand() const;
 
     protected:
-        std::vector<Card*> hand;  // Cards in the player's hand
+        std::pair<std::unique_ptr<Card>, std::unique_ptr<Card>> m_Hand;
+        SDL_Rect m_Position;
 };

@@ -22,8 +22,7 @@ find_package(SDL2_mixer REQUIRED)
 
 # Automatically collect all .cpp files in src
 file(GLOB SOURCES
-    src/main.cpp
-    src/*/*.cpp
+    src/*.cpp
 )
 
 # Create the executable
