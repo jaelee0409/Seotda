@@ -29,6 +29,9 @@ class Game {
         void evaluateHands();
         void nextRound();
 
+        void collectBet(Player* player, int amount);
+        void resetPot();
+
     private:
         static GameStateManager s_GameStateManager;
 
@@ -37,4 +40,5 @@ class Game {
         SDL_Window* m_Window;
         SDL_Renderer* m_Renderer;
         bool m_IsRunning;
+        int m_Pot = 0;
 };

@@ -13,7 +13,7 @@
 
 GameStateManager Game::s_GameStateManager;
 
-Game::Game() : m_Window(nullptr), m_Renderer(nullptr), m_IsRunning(false) {
+Game::Game() : m_Window(nullptr), m_Renderer(nullptr), m_IsRunning(false), m_Pot(0) {
 
 }
 
@@ -111,21 +111,39 @@ void Game::handleEvents() {
             m_IsRunning = false;
         }
         else if (event.type == SDL_KEYDOWN) {
-            // Handle key presses for game actions (deal cards, player input)
             if (event.key.keysym.sym == SDLK_d) {
                 dealCards();
             }
+            // Debugging purpose
             else if (event.key.keysym.sym == SDLK_f) {
                 for (auto& player : m_Players) {
                     player->flipHand();
                 }
             }
             else if (event.key.keysym.sym == SDLK_r) {
-                m_Deck.reshuffle();
+                static bool isResetting = false;
 
+                if (isResetting) {
+                    std::cerr << "[DEBUG] Reset already in progress, ignoring extra presses." << std::endl;
+                    return;
+                }
+            
+                isResetting = true;
+
+                std::cerr << "[DEBUG] Resetting deck..." << std::endl;
                 for (auto& player : m_Players) {
+                    std::cerr << "[DEBUG] Clearing " << typeid(*player).name() << "'s hand..." << std::endl;
                     player->resetHand();
                 }
+                m_Deck.reshuffle();
+                std::cerr << "[DEBUG] Deck reshuffled successfully. 1" << std::endl;
+
+                resetPot();
+
+                isResetting = false;
+            }
+            else if (event.key.keysym.sym == SDLK_b) {
+                collectBet(m_Players[0].get(), 500);
             }
         }
     }
@@ -163,8 +181,8 @@ void Game::render() {
         for (const auto& card : m_Deck.getDeck()) {
             card->render();
         }
-        for (auto& player : m_Players) {
-            if (player->getHand().first || player->getHand().second) { // Ensure at least one card exists
+        for (const auto& player : m_Players) {
+            if (player->hasHand()) { // Ensure at least one card exists
                 player->renderHand();
             }
         }
@@ -221,4 +239,15 @@ void evaluateHands() {
 
 void nextRound() {
 
+}
+
+void Game::collectBet(Player* player, int amount) {
+    if (player->placeBet(amount)) {
+        m_Pot += amount;
+        std::cerr << "[Game] Bet collected: " << amount << " | Pot Total: " << m_Pot << std::endl;
+    }
+}
+
+void Game::resetPot() {
+    m_Pot = 0;
 }

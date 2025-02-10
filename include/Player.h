@@ -18,13 +18,16 @@ class Player {
 
         const std::pair<std::unique_ptr<Card>, std::unique_ptr<Card>>& getHand() const;
         SDL_Rect getPosition() const { return m_Position; }
-        
 
-        // Optionally, a method to flip a card for testing purposes
         void flipHand();
         bool hasHand() const;
+
+        int getBankroll() const;
+        void addWinnings(int amount);
+        bool placeBet(int amount);
 
     protected:
         std::pair<std::unique_ptr<Card>, std::unique_ptr<Card>> m_Hand;
         SDL_Rect m_Position;
+        int m_Bankroll;
 };

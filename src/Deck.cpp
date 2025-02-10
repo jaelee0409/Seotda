@@ -9,10 +9,11 @@
 #include "Card.h"
 
 Deck::Deck() {
-
+    std::cerr << "[DEBUG] Deck created at: " << this << std::endl;
 }
 
 Deck::~Deck() {
+    std::cerr << "[DEBUG] Deck destroyed at: " << this << std::endl;
     m_Renderer = nullptr;
 }
 
@@ -63,12 +64,15 @@ std::unique_ptr<Card> Deck::deal() {
 }
 
 void Deck::reshuffle() {
+    std::cerr << "[DEBUG] Reshuffling deck at: " << this << std::endl;
+    std::cerr << "[DEBUG] Clearing current deck..." << std::endl;
     m_CurrentDeck.clear();
     for (const auto& card : m_FullDeck) {
         m_CurrentDeck.push_back(std::make_unique<Card>(card->getCardID(), card->getSuit(), card->getType(), m_Renderer));
     }
+    std::cerr << "[DEBUG] Shuffling deck..." << std::endl;
     shuffle();
-
+    std::cerr << "[DEBUG] Deck reshuffled successfully. 2" << std::endl;
     for (size_t i = 0; i < m_CurrentDeck.size(); ++i) {
         m_CurrentDeck[i]->setPosition(m_CurrentDeck[i]->getPositionX() + i, m_CurrentDeck[i]->getPositionY() - i);
     }
