@@ -17,7 +17,6 @@ class Deck {
         bool isEmpty() const;
         void printDeck() const;
         const std::vector<std::unique_ptr<Card>>& getDeck() const;
-        void animateDealCard(Card& card, const SDL_Rect& dest, float speed);
 
     private:
         std::vector<std::unique_ptr<Card>> m_CurrentDeck;

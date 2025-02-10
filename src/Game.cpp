@@ -188,7 +188,7 @@ void Game::dealCards() {
 
     for (auto& player : m_Players) {
         SDL_Rect target1 = player->getPosition();
-        SDL_Rect target2 = { target1.x + 30, target1.y, Config::CARD_WIDTH, Config::CARD_HEIGHT };
+        SDL_Rect target2 = { target1.x + 50, target1.y, Config::CARD_WIDTH, Config::CARD_HEIGHT };
 
         std::unique_ptr<Card> card1 = m_Deck.deal();
         std::unique_ptr<Card> card2 = m_Deck.deal();
@@ -196,6 +196,11 @@ void Game::dealCards() {
         if (card1 && card2) {
             card1->startMoving(target1, 500);
             card2->startMoving(target2, 500);
+
+            if (dynamic_cast<HumanPlayer*>(player.get()) != nullptr) {
+                card1->flip();
+                card2->flip();
+            }
 
             player->addCardToHand(std::move(card1));
             player->addCardToHand(std::move(card2));

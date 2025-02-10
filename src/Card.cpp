@@ -66,7 +66,7 @@ void Card::update() {
     Uint32 elapsed = SDL_GetTicks() - m_MoveStartTime;
     float t = (elapsed / static_cast<float>(m_MoveDuration));
 
-    if (t >= 1.0f) {
+    if (t >= 0.1f) {
         m_IsMoving = false;
         m_Rect = m_TargetPos;
         return;

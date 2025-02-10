@@ -87,22 +87,3 @@ void Deck::printDeck() const {
 const std::vector<std::unique_ptr<Card>>& Deck::getDeck() const {
     return m_CurrentDeck;
 }
-
-void Deck::animateDealCard(Card& card, const SDL_Rect& dest, float speed) {
-    SDL_Rect startPos = card.getRect();
-    float progress = 0.0f;
-
-    while (progress < 1.0f) {
-        progress += speed;
-
-        int x = startPos.x + (dest.x - startPos.x) * progress;
-        int y = startPos.y + (dest.y - startPos.y) * progress;
-
-        card.setPosition(x, y);
-        card.render();
-
-        SDL_Delay(16);
-    }
-
-    card.setPosition(dest.x, dest.y);
-}
