@@ -62,6 +62,11 @@ bool Game::initialize() {
         return false;
     }
 
+    if (!Chip::loadChipTextures(m_Renderer)) {
+        std::cerr << "[Game::initialize] Failed to load chip textures!" << std::endl;
+        return false;
+    }
+
     // Initialize the deck
     m_Deck.initializeDeck(m_Renderer);
 
@@ -89,7 +94,11 @@ void Game::run() {
 void Game::cleanUp() {
     m_Players.clear();
 
+    Chip::destroyChipTextures();
     Card::destroyFaceDownTexture();
+
+    TTF_Quit();
+    IMG_Quit();
 
     if (m_Renderer) {
         SDL_DestroyRenderer(m_Renderer);
@@ -99,8 +108,7 @@ void Game::cleanUp() {
         SDL_DestroyWindow(m_Window);
         m_Window = nullptr;
     }
-    TTF_Quit();
-    IMG_Quit();
+
     SDL_Quit();
 }
 
@@ -145,6 +153,9 @@ void Game::handleEvents() {
             else if (event.key.keysym.sym == SDLK_b) {
                 collectBet(m_Players[0].get(), 500);
             }
+            else if (event.key.keysym.sym == SDLK_p) {
+                addToPot(1500000);
+            }
         }
     }
 }
@@ -184,8 +195,12 @@ void Game::render() {
         for (const auto& player : m_Players) {
             if (player->hasHand()) { // Ensure at least one card exists
                 player->renderHand();
+                
             }
+            player->renderChips(m_Renderer);
         }
+    
+        renderPotChips();
     }
     
     SDL_RenderPresent(m_Renderer);
@@ -200,32 +215,30 @@ void Game::dealCards() {
     for (auto& player : m_Players) {
         if (player->hasHand()) {
             std::cerr << "[Game::dealCards] Cards are already dealt. Cannot redeal!" << std::endl;
-            return;  // Prevent dealing if hands are already full
+            return;
         }
-    }
 
-    for (auto& player : m_Players) {
         SDL_Rect target1 = player->getPosition();
         SDL_Rect target2 = { target1.x + 50, target1.y, Config::CARD_WIDTH, Config::CARD_HEIGHT };
 
         std::unique_ptr<Card> card1 = m_Deck.deal();
         std::unique_ptr<Card> card2 = m_Deck.deal();
 
-        if (card1 && card2) {
-            card1->startMoving(target1, 500);
-            card2->startMoving(target2, 500);
-
-            if (dynamic_cast<HumanPlayer*>(player.get()) != nullptr) {
-                card1->flip();
-                card2->flip();
-            }
-
-            player->addCardToHand(std::move(card1));
-            player->addCardToHand(std::move(card2));
-        }
-        else {
+        if (!card1 || !card2) {
             std::cerr << "[Game::dealCards] Not enough cards to deal!" << std::endl;
+            return;
         }
+
+        card1->startMoving(target1, 500);
+        card2->startMoving(target2, 500);
+
+        if (dynamic_cast<HumanPlayer*>(player.get()) != nullptr) {
+            card1->flip();
+            card2->flip();
+        }
+
+        player->addCardToHand(std::move(card1));
+        player->addCardToHand(std::move(card2));
     }
 }
 
@@ -241,13 +254,41 @@ void nextRound() {
 
 }
 
-void Game::collectBet(Player* player, int amount) {
-    if (player->placeBet(amount)) {
-        m_Pot += amount;
-        std::cerr << "[Game] Bet collected: " << amount << " | Pot Total: " << m_Pot << std::endl;
+void Game::addToPot(int amount) {
+    std::vector<int> chipValues = { 1000000, 500000, 100000, 50000, 10000 };
+
+    for (int chip : chipValues) {
+        while (amount >= chip) {
+            m_PotChips[chip]++;
+            amount -= chip;
+        }
     }
+
+    std::cerr << "[Game::addToPot] Added " << amount << " to pot. New pot size: " << m_PotChips.size() << " chip types." << std::endl;
+}
+
+void Game::collectBet(Player* player, int amount) {
+    // if (player->placeBet(amount)) {
+    //     m_Pot += amount;
+    //     std::cerr << "[Game] Bet collected: " << amount << " | Pot Total: " << m_Pot << std::endl;
+    // }
 }
 
 void Game::resetPot() {
-    m_Pot = 0;
+    m_PotChips.clear();
+}
+
+void Game::renderPotChips() const {
+    int x = Config::SCREEN_WIDTH / 2;  // Center pot on screen
+    int y = Config::SCREEN_HEIGHT / 2 + 100;
+
+    for (const auto& [chipValue, count] : m_PotChips) {
+        for (int i = 0; i < count; ++i) {
+            if (i >= 10)
+                break;
+            SDL_Rect chipRect = { x, y - (i * 5), 40, 40 };
+            SDL_RenderCopy(m_Renderer, Chip::getTextureForValue(chipValue), nullptr, &chipRect);
+        }
+        x += 40;
+    }
 }

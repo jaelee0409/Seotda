@@ -8,7 +8,7 @@
 #include "Deck.h"
 #include "Card.h"
 
-Deck::Deck() {
+Deck::Deck() : m_Renderer(nullptr) {
     std::cerr << "[DEBUG] Deck created at: " << this << std::endl;
 }
 
@@ -68,7 +68,7 @@ void Deck::reshuffle() {
     std::cerr << "[DEBUG] Clearing current deck..." << std::endl;
     m_CurrentDeck.clear();
     for (const auto& card : m_FullDeck) {
-        m_CurrentDeck.push_back(std::make_unique<Card>(card->getCardID(), card->getSuit(), card->getType(), m_Renderer));
+        m_CurrentDeck.emplace_back(std::make_unique<Card>(card->getCardID(), card->getSuit(), card->getType(), m_Renderer));
     }
     std::cerr << "[DEBUG] Shuffling deck..." << std::endl;
     shuffle();

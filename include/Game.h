@@ -6,6 +6,7 @@
 
 #include "Player.h"
 #include "Deck.h"
+#include "Chip.h"
 #include "GameStateManager.h"
 
 class Game {
@@ -30,13 +31,16 @@ class Game {
         void nextRound();
 
         void collectBet(Player* player, int amount);
+        void addToPot(int amount);
         void resetPot();
+        void renderPotChips() const;
 
     private:
         static GameStateManager s_GameStateManager;
 
         Deck m_Deck;
         std::vector<std::unique_ptr<Player>> m_Players;
+        std::map<int, int> m_PotChips;
         SDL_Window* m_Window;
         SDL_Renderer* m_Renderer;
         bool m_IsRunning;
