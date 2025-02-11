@@ -210,7 +210,9 @@ void startGame() {
 
 }
         
-
+/**
+ * @brief Deals two cards from the deck to each player's hand and start moving them. Human player's hand is dealt face up.
+ */
 void Game::dealCards() {
     for (auto& player : m_Players) {
         if (player->hasHand()) {
