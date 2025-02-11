@@ -4,8 +4,13 @@
 BUILD_DIR="build"
 
 # Remove all files in the build directory (be careful with this)
-echo "Cleaning build directory..."
-rm -rf $BUILD_DIR/*
+if [ -d "$BUILD_DIR" ] && [ "$BUILD_DIR" != "/" ]; then
+    echo "Cleaning build directory..."
+    rm -rf "$BUILD_DIR"/*
+else
+    echo "Error: BUILD_DIR is not valid!"
+    exit 1
+fi
 
 # Create the build directory if it doesn't exist
 echo "Creating build directory..."
