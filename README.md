@@ -15,29 +15,16 @@ Seotda (섯다) is a traditional Korean card game that involves strategy, bluffi
 git clone https://github.com/jaelee0409/Seotda.git
 cd Seotda
 
-# Run the build script
+# Run the build script in the root folder (Automatically runs after building)
 ./build.sh
 ```
 
 ### Running the Game
 ```sh
-./build/SeotdaGame
+./build/SeotdaGame.exe
+or
+cd build && ./SeotdaGame.exe
 ```
-
-## ⚙️ Features (In Construction 🚧)
-<!--
-- 🎮 **Single-player Mode** (Work in Progress)
-- 🤖 **AI Opponents** (Basic AI implementation underway)
-- 🎨 **Graphical UI** (UI elements still being developed)
-- 🔊 **Sound Effects** (To be added)
-- 🃏 **Randomized Deck Shuffling** (Implemented)
--->
-
-## 🛠 Development
-### Code Structure
-- **Game.h / Game.cpp**: Core game logic.
-- **Player.h / AIPlayer.h**: Player and AI logic.
-- **Deck.h / Card.h**: Card-related logic.
 
 ### How to Contribute
 1. Fork the repository
