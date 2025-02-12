@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "core/Game.h"
 
 int main(int argc, char* argv[]) {
     Game game;
@@ -8,7 +8,6 @@ int main(int argc, char* argv[]) {
     }
 
     game.run();
-    game.cleanUp();
 
     return 0;
 }

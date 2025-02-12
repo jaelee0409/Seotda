@@ -22,7 +22,11 @@ find_package(SDL2_mixer REQUIRED)
 
 # Automatically collect all .cpp files in src
 file(GLOB SOURCES
-    src/*.cpp
+    src/main.cpp
+    src/core/*.cpp
+    src/game/*.cpp
+    src/screens/*.cpp
+    src/ui/*.cpp
 )
 
 # Create the executable
@@ -35,7 +39,7 @@ target_include_directories(SeotdaGame
 
 # Link the SDL2 and SDL2_image libraries
 target_link_libraries(SeotdaGame 
-    SDL2::SDL2 
+    SDL2::SDL2
     SDL2_image::SDL2_image
     SDL2_ttf::SDL2_ttf
     SDL2_mixer::SDL2_mixer

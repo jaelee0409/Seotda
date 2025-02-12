@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
-#include "Chip.h"
-#include "Config.h"
+#include "core/Config.h"
+#include "game/Chip.h"
 
 std::map<int, SDL_Texture*> Chip::s_ChipTextures;  // Store textures by value
 

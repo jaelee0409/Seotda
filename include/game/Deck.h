@@ -10,17 +10,20 @@ class Deck {
         Deck();
         ~Deck();
 
-        void initializeDeck(SDL_Renderer* renderer);
+        void initializeDeck();
+        void render(SDL_Renderer* renderer) const;
         void shuffle();
-        std::unique_ptr<Card> deal();
+        Card& deal();
         void reshuffle();
         bool isEmpty() const;
         void printDeck() const;
-        const std::vector<std::unique_ptr<Card>>& getDeck() const;
+
+        std::vector<Card>& getCurrentDeck();
+        const std::vector<Card>& getCurrentDeck() const;
 
     private:
-        std::vector<std::unique_ptr<Card>> m_CurrentDeck;
-        std::vector<std::unique_ptr<Card>> m_FullDeck;
+        std::vector<Card> m_CurrentDeck;
+        std::vector<Card> m_FullDeck;
 
         SDL_Renderer* m_Renderer;
 };

@@ -3,7 +3,7 @@
 #include "GameStateManager.h"
 #include "GameState.h"
 
-GameStateManager::GameStateManager() : m_CurrentGameState(GameStateEnum::Gameplay) {
+GameStateManager::GameStateManager() {
 
 }
 
@@ -11,41 +11,23 @@ GameStateManager::~GameStateManager() {
 
 }
 
-void GameStateManager::pushState(GameState* state) {
-    if (!stateStack.empty()) {
-        stateStack.top()->exit();
+void GameStateManager::pushState(std::unique_ptr<GameState> newState) {
+    if (!m_GameStateStack.empty()) {
+        m_GameStateStack.top()->exit();
     }
-    stateStack.push(state);
-    state->enter();
+    m_GameStateStack.push(std::move(newState));
+    m_GameStateStack.top()->enter();
 }
 
 void GameStateManager::popState() {
-    if (!stateStack.empty()) {
-        stateStack.top()->exit();
-        delete stateStack.top();
-        stateStack.pop();
-    }
-    if (!stateStack.empty()) {
-        stateStack.top()->enter();
+    if (!m_GameStateStack.empty()) {
+        m_GameStateStack.top()->exit();
+        m_GameStateStack.pop();
     }
 }
 
 void GameStateManager::update() {
-    if (!stateStack.empty()) {
-        stateStack.top()->update();
+    if (!m_GameStateStack.empty()) {
+        // m_GameStateStack.top()->update(*this);
     }
-}
-
-void GameStateManager::render() {
-    if (!stateStack.empty()) {
-        stateStack.top()->render();
-    }
-}
-
-GameStateEnum GameStateManager::getCurrentGameState() const {
-    return m_CurrentGameState;
-}
-
-void GameStateManager::setGameState(GameStateEnum state) {
-    m_CurrentGameState = state;
 }

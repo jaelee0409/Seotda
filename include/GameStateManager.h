@@ -1,30 +1,24 @@
 #pragma once
 
 #include <stack>
+#include <memory>
 
 #include "GameState.h"
 
-enum class GameStateEnum {
-    Intro,
-    Menu,
-    Rules,
-    Gameplay
-};
-
+/**
+ * @class GameStateManager
+ * @brief Manages transitions between different game states.
+ */
 class GameStateManager {
     
     public:
         GameStateManager();
         ~GameStateManager();
         
-        void pushState(GameState* state);
+        void pushState(std::unique_ptr<GameState> newState);
         void popState();
         void update();
-        void render();
-        GameStateEnum getCurrentGameState() const;
-        void setGameState(GameStateEnum state);
 
     private:
-        std::stack<GameState*> stateStack;
-        GameStateEnum m_CurrentGameState;
+    std::stack<std::unique_ptr<GameState>> m_GameStateStack;
 };
