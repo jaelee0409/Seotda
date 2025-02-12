@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "core/Config.h"
 #include "core/FontManager.h"
 
 // Define the static pointer
@@ -25,7 +26,8 @@ FontManager* FontManager::getInstance() {
 }
 
 bool FontManager::loadFont(const std::string& fontID, const std::string& filePath, int fontSize) {
-    TTF_Font* font = TTF_OpenFont(filePath.c_str(), fontSize);
+    std::string path = Config::getAssetPath(filePath);
+    TTF_Font* font = TTF_OpenFont(path.c_str(), fontSize);
     if (!font) {
         std::cerr << "[ERROR] Failed to load font '" << fontID
                   << "' from " << filePath << ": " << TTF_GetError() << std::endl;

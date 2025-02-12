@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SDL.h>
 #include <string>
 #include <filesystem>
 #include <iostream>
@@ -23,22 +24,44 @@ namespace Config {
     constexpr int PLAYER_COUNT = 5;
     constexpr int STARTING_MONEY = 10'000'000;
 
-    inline std::string getAssetPath(const std::string& relativePath) {
-        std::string buildPath = std::filesystem::current_path().string() + "/assets/" + relativePath;
-        std::string rootPath = std::filesystem::current_path().string() + "/../assets/" + relativePath;
+    
 
-        // Check if file exists in `build/assets/`
-        if (std::filesystem::exists(buildPath)) {
-            return buildPath;
+    static std::string detectBasePath() {
+        char* base = SDL_GetBasePath();
+        if (!base) {
+            // fallback if SDL_GetBasePath() fails
+            return "./";
         }
 
-        // Otherwise, use `../assets/`
-        if (std::filesystem::exists(rootPath)) {
-            return rootPath;
+        std::string s(base);
+        SDL_free(base);
+
+        std::filesystem::path exePath(s);
+
+        // 1) If path ends in a slash, `exePath.filename()` is empty
+        //    so let’s remove the trailing slash by going to parent_path().
+        if (exePath.filename().string().empty()) {
+            exePath = exePath.parent_path(); 
+            // e.g. "C:\msys64\home\jaele\projects\Seotda\build"
         }
 
-        // If file doesn't exist, print warning and return default path
-        std::cerr << "[Error] Asset not found! Returning default path: assets/" << relativePath << std::endl;
-        return "assets/" + relativePath;
+        // 2) Now if the last folder is "build", move up one level
+        if (exePath.filename().string() == "build") {
+            exePath = exePath.parent_path();
+            // e.g. "C:\msys64\home\jaele\projects\Seotda"
+        }
+
+        // 3) Return with trailing slash
+        //    This ensures final string ends with "/"
+        return exePath.string() + "/";
+    }
+
+    static std::string getBasePath() {
+        static std::string basePath = detectBasePath();
+        return basePath;
+    }
+
+    static std::string getAssetPath(const std::string& relativePath) {
+        return getBasePath() + "assets/" + relativePath;
     }
 }

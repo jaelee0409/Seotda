@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 
+#include "core/Config.h"
 #include "core/CardTextureManager.h"
 
 CardTextureManager* CardTextureManager::s_Instance = nullptr;
@@ -50,7 +51,7 @@ SDL_Texture* CardTextureManager::getFaceUpTexture(CardID id) const {
 }
 
 bool CardTextureManager::loadAllTextures() {
-    if (!loadFaceDownTexture("assets/images/cards/face_down.png"))
+    if (!loadFaceDownTexture("images/cards/face_down.png"))
         return false;
 
     if (!loadFaceUpTexture(CardID::JanuaryBright, getCardImagePathById(CardID::JanuaryBright)))
@@ -116,7 +117,8 @@ void CardTextureManager::destroyAllTextures() {
 }
 
 SDL_Texture* CardTextureManager::loadTexture(const std::string& filePath) {
-    SDL_Surface* surface = IMG_Load(filePath.c_str());
+    std::string path = Config::getAssetPath(filePath);
+    SDL_Surface* surface = IMG_Load(path.c_str());
     if (!surface) {
         std::cerr << "[CardTextureManager] IMG_Load failed for " 
                   << filePath << ": " << IMG_GetError() << "\n";
@@ -133,7 +135,7 @@ SDL_Texture* CardTextureManager::loadTexture(const std::string& filePath) {
 }
 
 std::string CardTextureManager::getCardImagePathById(CardID id) const {
-    std::string basePath = "assets/images/cards/";
+    std::string basePath = "images/cards/";
     std::string imageName;
 
     switch (id) {
