@@ -22,7 +22,7 @@ cd Seotda
 ### Running the Game
 ```sh
 ./build/SeotdaGame.exe
-or
+# or
 cd build && ./SeotdaGame.exe
 ```
 
