@@ -12,22 +12,29 @@ class Player {
         Player(int x, int y, int startingMoney);
         virtual ~Player() = default;
 
-        virtual void addCardToHand(const Card& card);
-        virtual void resetHand();
+        void addCardToHand(const Card& card);
+        void resetHand();
+        void resetBet();
+        void resetBankroll();
         void flipHand();
         bool hasHand() const;
-        bool isHuman() const { return m_IsHuman; }
-
+        
         bool placeBet(int amount);
         void addWinnings(int amount);
-        void resetBankroll(int newAmount);
 
-        const std::vector<Card>& getHand() const { return m_Hand; }
-        SDL_Point getPosition() const { return m_Position; }
-        int getBankroll() const { return m_Bankroll; }
+        bool getIsHuman() const;
+        bool getIsFolded() const;
+        bool getIsAllIn() const;
+        const std::vector<Card>& getHand() const;
+        SDL_Point getPosition() const;
+        int getBankroll() const;
+        int getCurrentBet() const;
+        const std::string& getName() const;
+
+        void setBankroll(int amount);
+        void setIsFolded(bool b);
 
         virtual void renderHand(SDL_Renderer* renderer);
-        virtual void renderChips(SDL_Renderer* renderer) const;
 
         // Card* getCard(size_t index);
         // size_t getHandSize() const;
@@ -35,7 +42,11 @@ class Player {
     protected:
         std::vector<Card> m_Hand;
         SDL_Point m_Position;
-        std::map<int, int> m_ChipStacks;
+        //std::map<int, int> m_ChipStacks;
         int m_Bankroll;
+        int m_CurrentBet{0};
         bool m_IsHuman;
+        bool m_IsFolded{false};
+        bool m_IsAllIn{false};
+        std::string m_Name;
 };

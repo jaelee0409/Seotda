@@ -7,7 +7,8 @@
 
 Player::Player(int x, int y, int startingMoney) : m_Bankroll(startingMoney) {
     m_Position = { x, y };
-    resetBankroll(startingMoney);
+    setBankroll(startingMoney);
+    resetBet();
 }
  
 void Player::addCardToHand(const Card& card) {
@@ -20,16 +21,19 @@ void Player::renderHand(SDL_Renderer* renderer) {
         card.setPosition(m_Position.x + offset, m_Position.y);
         card.render(renderer);
         offset += 60;
-        // if (card) {
-        //     card->setPosition(m_Position.x + offset, m_Position.y);
-        //     card->render(renderer);
-        //     offset += 60;
-        // }
     }
 }
 
 void Player::resetHand() {
     m_Hand.clear();
+}
+
+void Player::resetBet() {
+    m_CurrentBet = 0;
+}
+
+void Player::resetBankroll() {
+    m_Bankroll = 0;
 }
 
 void Player::flipHand() {
@@ -44,52 +48,66 @@ bool Player::hasHand() const {
 
 void Player::addWinnings(int amount) {
     m_Bankroll += amount;
-    resetBankroll(m_Bankroll);
 }
 
 bool Player::placeBet(int amount) {
     if (amount > m_Bankroll) {
-        std::cerr << "[Player::placeBet] Not enough chips for bet of " << amount << "!" << std::endl;
+        std::cerr << "[ERROR] Not enough chips for bet of " << amount << "\n";
         return false;
     }
 
-    m_Bankroll -= amount;  // ✅ Deduct from bankroll immediately
-
-    std::vector<int> chipValues = { 1000000, 500000, 100000, 50000, 10000 };
-
-    for (int chip : chipValues) {
-        while (amount >= chip && m_ChipStacks[chip] > 0) {
-            m_ChipStacks[chip]--;
-            amount -= chip;
-        }
-    }
+    m_Bankroll -= amount;
+    m_CurrentBet += amount;
 
     return true;
 }
-void Player::resetBankroll(int amount) {
-    m_ChipStacks.clear();  // ✅ Clear old chip data
 
-    std::vector<int> chipValues = { 1000000, 500000, 100000, 50000, 10000 };
-    
-    for (int chip : chipValues) {
-        while (amount >= chip) {
-            m_ChipStacks[chip]++;
-            amount -= chip;
-        }
-    }
+/*
+  ==============================================================================
+    Getters
+  ==============================================================================
+*/
+bool Player::getIsHuman() const {
+    return m_IsHuman;
 }
 
-void Player::renderChips(SDL_Renderer* renderer) const {
-    // int x = m_Position.x + 150;  // Offset from player
-    // int y = m_Position.y;
-
-    // for (const auto& [chipValue, count] : m_ChipStacks) {
-    //     for (int i = 0; i < count; ++i) {
-    //         if (i >= 10)
-    //             break;
-    //         SDL_Rect chipRect = { x, y - (i * 5), 40, 40 };
-    //         SDL_RenderCopy(renderer, Chip::getTextureForValue(chipValue), nullptr, &chipRect);
-    //     }
-    //     x += 40;
-    // }
+bool Player::getIsFolded() const {
+    return m_IsFolded;
 }
+
+bool Player::getIsAllIn() const {
+    return m_IsAllIn;
+}
+
+const std::vector<Card>& Player::getHand() const {
+    return m_Hand;
+}
+
+SDL_Point Player::getPosition() const {
+    return m_Position;
+}
+
+int Player::getBankroll() const {
+    return m_Bankroll;
+}
+
+int Player::getCurrentBet() const {
+    return m_CurrentBet;
+}
+
+const std::string& Player::getName() const {
+    return m_Name;
+}
+
+/*
+  ==============================================================================
+    Setters
+  ==============================================================================
+*/
+void Player::setBankroll(int amount) {
+    m_Bankroll = amount;
+}
+
+void Player::setIsFolded(bool b) {
+    m_IsFolded = b;
+};

@@ -54,9 +54,9 @@ bool Game::initialize() {
     if (!FontManager::getInstance()->loadFont("Arial24", "fonts/arial.ttf", 24)) {
         return false;
     }
-    if (!FontManager::getInstance()->loadFont("Arial48", "fonts/arial.ttf", 48)) {
-        return false;
-    }
+    // if (!FontManager::getInstance()->loadFont("Arial48", "fonts/arial.ttf", 48)) {
+    //     return false;
+    // }
 
     m_UIManager = std::make_unique<UIManager>(m_Renderer);
 
