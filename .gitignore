@@ -1,5 +1,30 @@
-# Ignore build folder
+# Ignore build files
 /build/
 
-# Ignore .vscode folder
-/.vscode/
+# Don't ignore the bin directory (keep the compiled game and DLLs)
+!/bin/
+
+# Ignore CMake and Makefile build artifacts
+/CMakeFiles/
+/CMakeCache.txt
+/Makefile
+
+# Ignore compiled object files and libraries
+*.o
+*.out
+*.so
+*.a
+*.lib
+*.exp
+*.pdb
+
+# Ignore package manager files
+/vcpkg_installed/
+/conanbuildinfo.txt
+
+# Ignore temporary and IDE-specific files
+*.log
+*.tmp
+.DS_Store
+.vscode/
+.idea/
