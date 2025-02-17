@@ -29,38 +29,38 @@ namespace Config {
     static std::string detectBasePath() {
         char* base = SDL_GetBasePath();
         if (!base) {
-            // fallback if SDL_GetBasePath() fails
+            // Fallback if SDL_GetBasePath() fails
             return "./";
         }
-
+    
         std::string s(base);
         SDL_free(base);
-
+    
         std::filesystem::path exePath(s);
-
-        // 1) If path ends in a slash, `exePath.filename()` is empty
-        //    so let’s remove the trailing slash by going to parent_path().
+    
+        // If path ends in a slash, remove trailing slash
         if (exePath.filename().string().empty()) {
-            exePath = exePath.parent_path(); 
-            // e.g. "C:\msys64\home\jaele\projects\Seotda\build"
+            exePath = exePath.parent_path();
         }
-
-        // 2) Now if the last folder is "build", move up one level
+    
+        // If the last folder is "build", move up one level (not needed anymore)
         if (exePath.filename().string() == "build") {
             exePath = exePath.parent_path();
-            // e.g. "C:\msys64\home\jaele\projects\Seotda"
         }
-
-        // 3) Return with trailing slash
-        //    This ensures final string ends with "/"
+    
+        // Now, check if the last folder is "bin" (expected new setup)
+        if (exePath.filename().string() != "bin") {
+            exePath /= "bin";  // Ensure basePath is the bin/ directory
+        }
+    
         return exePath.string() + "/";
     }
-
+    
     static std::string getBasePath() {
         static std::string basePath = detectBasePath();
         return basePath;
     }
-
+    
     static std::string getAssetPath(const std::string& relativePath) {
         return getBasePath() + "assets/" + relativePath;
     }

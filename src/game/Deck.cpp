@@ -42,26 +42,26 @@ void Deck::initializeDeck() {
     // m_FullDeck.emplace_back(std::make_unique<Card>(CardID::OctoberRibbon, CardSuit::October, CardType::Ribbon));
 
     m_FullDeck.reserve(20);
-    m_FullDeck.emplace_back(Card(CardID::JanuaryRibbon, CardSuit::January, CardType::Bright));
-    m_FullDeck.emplace_back(Card(CardID::JanuaryRibbon, CardSuit::January, CardType::Ribbon));
-    m_FullDeck.emplace_back(Card(CardID::FebruaryAnimal, CardSuit::February, CardType::Animal));
-    m_FullDeck.emplace_back(Card(CardID::FebruaryRibbon, CardSuit::February, CardType::Ribbon));
-    m_FullDeck.emplace_back(Card(CardID::MarchBright, CardSuit::March, CardType::Bright));
-    m_FullDeck.emplace_back(Card(CardID::MarchRibbon, CardSuit::March, CardType::Ribbon));
-    m_FullDeck.emplace_back(Card(CardID::AprilAnimal, CardSuit::April, CardType::Animal));
-    m_FullDeck.emplace_back(Card(CardID::AprilRibbon, CardSuit::April, CardType::Ribbon));
-    m_FullDeck.emplace_back(Card(CardID::MayRibbon, CardSuit::May, CardType::Ribbon));
-    m_FullDeck.emplace_back(Card(CardID::MayDoubleJunk, CardSuit::May, CardType::DoubleJunk));
-    m_FullDeck.emplace_back(Card(CardID::JuneAnimal, CardSuit::June, CardType::Animal));
-    m_FullDeck.emplace_back(Card(CardID::JuneRibbon, CardSuit::June, CardType::Ribbon));
-    m_FullDeck.emplace_back(Card(CardID::JulyAnimal, CardSuit::July, CardType::Animal));
-    m_FullDeck.emplace_back(Card(CardID::JulyRibbon, CardSuit::July, CardType::Ribbon));
-    m_FullDeck.emplace_back(Card(CardID::AugustBright, CardSuit::August, CardType::Bright));
-    m_FullDeck.emplace_back(Card(CardID::AugustAnimal, CardSuit::August, CardType::Animal));
-    m_FullDeck.emplace_back(Card(CardID::SeptemberRibbon, CardSuit::September, CardType::Ribbon));
-    m_FullDeck.emplace_back(Card(CardID::SeptemberDoubleJunk, CardSuit::September, CardType::DoubleJunk));
-    m_FullDeck.emplace_back(Card(CardID::OctoberAnimal, CardSuit::October, CardType::Animal));
-    m_FullDeck.emplace_back(Card(CardID::OctoberRibbon, CardSuit::October, CardType::Ribbon));
+    m_FullDeck.emplace_back(CardID::JanuaryRibbon, CardSuit::January, CardType::Bright);
+    m_FullDeck.emplace_back(CardID::JanuaryRibbon, CardSuit::January, CardType::Ribbon);
+    m_FullDeck.emplace_back(CardID::FebruaryAnimal, CardSuit::February, CardType::Animal);
+    m_FullDeck.emplace_back(CardID::FebruaryRibbon, CardSuit::February, CardType::Ribbon);
+    m_FullDeck.emplace_back(CardID::MarchBright, CardSuit::March, CardType::Bright);
+    m_FullDeck.emplace_back(CardID::MarchRibbon, CardSuit::March, CardType::Ribbon);
+    m_FullDeck.emplace_back(CardID::AprilAnimal, CardSuit::April, CardType::Animal);
+    m_FullDeck.emplace_back(CardID::AprilRibbon, CardSuit::April, CardType::Ribbon);
+    m_FullDeck.emplace_back(CardID::MayRibbon, CardSuit::May, CardType::Ribbon);
+    m_FullDeck.emplace_back(CardID::MayDoubleJunk, CardSuit::May, CardType::DoubleJunk);
+    m_FullDeck.emplace_back(CardID::JuneAnimal, CardSuit::June, CardType::Animal);
+    m_FullDeck.emplace_back(CardID::JuneRibbon, CardSuit::June, CardType::Ribbon);
+    m_FullDeck.emplace_back(CardID::JulyAnimal, CardSuit::July, CardType::Animal);
+    m_FullDeck.emplace_back(CardID::JulyRibbon, CardSuit::July, CardType::Ribbon);
+    m_FullDeck.emplace_back(CardID::AugustBright, CardSuit::August, CardType::Bright);
+    m_FullDeck.emplace_back(CardID::AugustAnimal, CardSuit::August, CardType::Animal);
+    m_FullDeck.emplace_back(CardID::SeptemberRibbon, CardSuit::September, CardType::Ribbon);
+    m_FullDeck.emplace_back(CardID::SeptemberDoubleJunk, CardSuit::September, CardType::DoubleJunk);
+    m_FullDeck.emplace_back(CardID::OctoberAnimal, CardSuit::October, CardType::Animal);
+    m_FullDeck.emplace_back(CardID::OctoberRibbon, CardSuit::October, CardType::Ribbon);
 
     reshuffle();
 }
