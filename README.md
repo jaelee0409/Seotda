@@ -1,9 +1,9 @@
 # Seotda - Korean Card Game
 
-## 🃏 About the Game
+## About the Game
 Seotda (섯다) is a traditional Korean card game that involves strategy, bluffing, and luck. This project is an implementation of Seotda in C++ using SDL2.
 
-## 🚀 Getting Started
+## Getting Started
 ### Prerequisites
 - C++17 or later
 - CMake (3.10+ recommended)
@@ -33,6 +33,6 @@ cd build && ./SeotdaGame.exe
 4. Push to your branch (`git push origin feature-name`)
 5. Open a Pull Request
 
-## 📝 License
+## License
 This project is licensed under the [MIT License](LICENSE).
 
